@@ -25,7 +25,7 @@ namespace Project.Services.Database
                 ));
 
             string query = $"SELECT {selectedColumns} FROM {queryParams.TableName}";
-
+            
             if (queryParams.InnerJoin != null && queryParams.InnerJoin.Length > 0)
             {
                 foreach (var condition in queryParams.InnerJoin)

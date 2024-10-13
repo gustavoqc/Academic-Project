@@ -9,16 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using Project.Controls;
+using Org.BouncyCastle.Asn1.Pkcs;
 
 namespace Project.Forms
 {
     public partial class frmMain : Form
     {
-        private string position;
+        private string employeePosition;
 
-        public frmMain(string position)
+        public frmMain(string employeePosition)
         {
-            this.position = position;
+            this.employeePosition = employeePosition;
             InitializeComponent();
         }
 
@@ -31,7 +32,6 @@ namespace Project.Forms
                 {
                     pnlMain.Controls.Remove(control);
                     control.Dispose();
-                    control = null;
                 }
             }
         }
@@ -50,7 +50,7 @@ namespace Project.Forms
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            if (position != null && position.ToLower().Equals("gerente"))
+            if (employeePosition != null && employeePosition.ToLower().Equals("gerente"))
             {
                 btnReg.Visible = true;
                 btnReg.Enabled = true;
@@ -67,7 +67,6 @@ namespace Project.Forms
             {
                 Dock = DockStyle.Fill
             };
-
             pnlMain.Controls.Clear();
             pnlMain.Controls.Add(regPanel);
         }

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Windows.Forms;
+using MySqlX.XDevAPI.Relational;
 using Project.Forms;
 using Project.Services.Database;
 
@@ -111,7 +112,7 @@ namespace Project.Controls
 
                     Columns =
                     [
-                        new() { Name = "T.id_transacao"},
+                        new() { Name = "T.id_transacao", Alias = "ID"},
                         new() { Name = "T.transacao_valida"},
                         new() { Name = "C.nome_cliente", Alias = "Cliente" },
                         new() { Name = "T.dt_transacao", Alias = "Data" },
@@ -137,6 +138,7 @@ namespace Project.Controls
         private async void LoadData(string data)
         {
             pgbData.Visible = true;
+            gridInv.Columns.Clear();
             gridInv.DataSource = "";
 
             switch (data)
@@ -147,31 +149,13 @@ namespace Project.Controls
                     break;
                 case "TA":
                     gridInv.DataSource = await TransactionData('A');
-                    gridInv.Columns[1].Visible = false;
-                    gridInv.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 192);
                     break;
                 case "TH":
                     gridInv.DataSource = await TransactionData('H');
-                    gridInv.Columns[1].Visible = false;
-
-                    foreach (DataGridViewRow row in gridInv.Rows)
-                    {
-                        if (!(bool)row.Cells[1].Value)
-                        {
-                            row.DefaultCellStyle.BackColor = Color.FromArgb(255, 160, 160);
-                            continue;
-                        }
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(192, 255, 192);
-                    }
-
                     break;
             }
 
-            if (gridInv.SelectedRows.Count > 0)
-            {
-                gridInv.Columns[0].Visible = false;
-                gridInv.ClearSelection();
-            }
+            gridInv.ClearSelection();
 
             if (!pgbData.IsDisposed)
                 pgbData.Visible = false;
@@ -183,12 +167,16 @@ namespace Project.Controls
             HideActionButtons();
             LoadData("I");
             gridInv.Tag = "I";
+            txtSearch.Tag = "I";
+            txtSearch.Text = "";
+            txtSearch_Leave(sender, e);
         }
 
         private void ControlPanel_Load(object sender, EventArgs e)
         {
             HideActionButtons();
             LoadData("I");
+            txtSearch.Tag = "I";
             gridInv.Tag = "I";
         }
 
@@ -201,17 +189,31 @@ namespace Project.Controls
                     if (e.CellStyle == null) return;
 
                     if (value <= 5)
-                    {
                         e.CellStyle.BackColor = Color.FromArgb(255, 160, 160);
-                        return;
-                    }
                     else if (value > 5 && value < 15)
-                    {
                         e.CellStyle.BackColor = Color.FromArgb(255, 255, 192);
-                        return;
-                    }
+                    else
+                        e.CellStyle.BackColor = Color.FromArgb(192, 255, 192);
+                }
+                return;
+            }
 
-                    e.CellStyle.BackColor = Color.FromArgb(192, 255, 192);
+            if (gridInv.Tag?.Equals("TA") ?? false)
+            {
+                gridInv.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 192);
+                return;
+            }
+
+            if (gridInv.Tag?.Equals("TH") ?? false)
+            {
+                foreach (DataGridViewRow row in gridInv.Rows)
+                {
+                    if (!(bool)row.Cells[1].Value)
+                    {
+                        row.DefaultCellStyle.BackColor = Color.FromArgb(255, 160, 160);
+                        continue;
+                    }
+                    row.DefaultCellStyle.BackColor = Color.FromArgb(192, 255, 192);
                 }
             }
         }
@@ -223,16 +225,12 @@ namespace Project.Controls
 
         private void btnActiveTrans_Click(object sender, EventArgs e)
         {
-            editProduct.Visible = false;
-            HideActionButtons();
             LoadData("TA");
             gridInv.Tag = "TA";
         }
 
         private void btnHistoryTrans_Click(object sender, EventArgs e)
         {
-            editProduct.Visible = false;
-            HideActionButtons();
             LoadData("TH");
             gridInv.Tag = "TH";
         }
@@ -313,7 +311,7 @@ namespace Project.Controls
             }
 
             txtProdId.Text = txtProdId.Text.PadLeft(5, '0');
-            cmbCateg.Text = gridInv.SelectedCells[2].Value.ToString();
+            cmbCateg.SelectedIndex = cmbCateg.FindStringExact(gridInv.SelectedCells[2].Value.ToString());
             numValue.Value = Convert.ToDecimal(gridInv.SelectedCells[3].Value);
             imgPath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
 
@@ -322,7 +320,7 @@ namespace Project.Controls
             else
                 imgProd.Image = imgProd.InitialImage;
 
-            imgProd.Tag = imgPath;
+            editProduct.BringToFront();
             editProduct.Visible = true;
         }
 
@@ -393,11 +391,17 @@ namespace Project.Controls
 
             if (db.UpdateQuery(queryParams) > 0)
             {
-                File.Copy(imgProd.Tag?.ToString() ?? $"{folderPath}\\no-image.png", savePath, true);
+                string? imgTag = imgProd.Tag?.ToString();
+                if (imgTag != null)
+                    File.Copy(imgTag, savePath, true);
+
+                imgProd.Image.Dispose();
+                imgProd.Image = null;
+                imgProd.Tag = null;
             }
 
-            imgProd.Tag = null;
             editProduct.Visible = false;
+            LoadData("I");
         }
 
         private void imgProd_Click(object sender, EventArgs e)
@@ -432,10 +436,94 @@ namespace Project.Controls
 
         private void editProduct_VisibleChanged(object sender, EventArgs e)
         {
+
             if (!editProduct.Visible)
             {
+                txtSearch.Visible = true;
                 gridInv.ClearSelection();
+                return;
             }
+
+            txtSearch.Visible = false;
+        }
+
+        private void txtSearch_Enter(object sender, EventArgs e)
+        {
+            if (txtSearch.Text.Equals("Buscar registro..."))
+            {
+                txtSearch.Text = "";
+                txtSearch.ForeColor = Color.Black;
+            }
+        }
+
+        private void txtSearch_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSearch.Text))
+            {
+                txtSearch.Text = "Buscar registro...";
+                txtSearch.ForeColor = Color.Gray;
+            }
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (gridInv.DataSource is DataView view)
+            {
+                gridInv.Columns.Clear();
+                gridInv.DataSource = view.Table;
+            }
+
+            if (!string.IsNullOrEmpty(txtSearch.Text) && !txtSearch.Text.Equals("Buscar registro..."))
+            {
+                if (gridInv.DataSource is DataTable dataTable)
+                {
+                    DataView filteredData = new(dataTable);
+                    string searchText = txtSearch.Text;
+
+                    if (int.TryParse(searchText, out int searchValue))
+                        filteredData.RowFilter = $"Id = {searchValue}";
+                    else
+                        filteredData.RowFilter = FilterSearch(searchText);
+
+                    gridInv.Columns.Clear();
+                    gridInv.DataSource = filteredData;
+                }
+            }
+
+            gridInv.ClearSelection();
+        }
+
+        private string FilterSearch(string searchText)
+        {
+            searchText = searchText.Replace("'", "''");
+            switch (txtSearch.Tag)
+            {
+                case "I":
+                    return $"Produto LIKE '%{searchText}%' OR Categoria LIKE '{searchText}%'";
+                case "T":
+                    return $"Cliente LIKE '{searchText}%'";
+            }
+
+            return "";
+        }
+
+        private void gridInv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            gridInv.Columns[0].Visible = false;
+            gridInv.Columns[1].Visible = true;
+
+            if (txtSearch.Tag?.Equals("T") ?? false)
+                gridInv.Columns[1].Visible = false;
+        }
+
+        private void btnTransactions_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            pnlProduct.Focus();
+            editProduct.Visible = false;
+            HideActionButtons();
+            txtSearch.Tag = "T";
+            txtSearch.Text = "";
+            txtSearch_Leave(sender, e);
         }
     }
 }

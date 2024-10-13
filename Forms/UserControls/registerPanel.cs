@@ -1,5 +1,7 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Windows.Forms;
+using Project.Controls;
 using Project.Services.Database;
 
 namespace Project.Forms
@@ -56,6 +58,23 @@ namespace Project.Forms
             }
         }
 
+        private bool ProductExists(string productName)
+        {
+            Database db = new();
+
+            var queryParams = new SelectQueryParams
+            {
+                TableName = "produto",
+                Where = $"REPLACE(nome_produto, ' ', '') LIKE REPLACE(\"%{productName}%\", ' ', '')"
+            };
+
+            var result = db.SelectQuery(queryParams);
+
+            if (result != null && result.Rows.Count > 0)
+                return true; 
+
+            return false;
+        }
         private void btnProducts_Click(object sender, EventArgs e)
         {
             ClearTextBoxes(pnlProduct);
@@ -99,15 +118,15 @@ namespace Project.Forms
             MessageBox.Show("Erro ao inserir dados, tente novamente mais tarde.");
         }
 
-        private static int InsertProducts(string name, string category, string value, string amount, string desc, string img_path)
+        private int InsertProducts(string name, string category, string value, string amount, string desc, string img_path)
         {
             Database db = new();
-
+            
             var queryParams = new InsertQueryParams
             {
                 TableName = "produto",
                 Columns = ["nome_produto", "categoria_produto", "valor_produto", "estoque_produto", "descricao_produto", "imagem_produto_path"],
-                Values = [$"\"{name}\"", $"\"{category}\"", value.Replace(',', '.'), amount, $"\"{desc}\"", $"\"{img_path}\""]
+                Values = [$"\"{ToTitleCase(name)}\"", $"\"{category}\"", value.Replace(',', '.'), amount, $"\"{desc}\"", $"\"{img_path}\""]
             };
 
             if (db.InsertQuery(queryParams) > 0)
@@ -117,6 +136,64 @@ namespace Project.Forms
             }
             MessageBox.Show("Erro ao inserir dados, tente novamente mais tarde.");
             return 0;
+        }
+
+        private Control? ControlExists()
+        {
+            foreach (Control control in Parent!.Controls)
+            {
+                if (control is UserControl)
+                {
+                    return control;
+                }
+            }
+            return null;
+        }
+
+        private void DeleteActiveControl()
+        {
+            Control? control = ControlExists();
+            if (control != null)
+            {
+                if (Parent!.Controls.Contains(control))
+                {
+                    Parent!.Controls.Remove(control);
+                    control.Dispose();
+                }
+            }
+        }
+
+        private async void GoToProduct()
+        {
+            string productName = txtProductName.Text;
+            Panel frmMain = (Panel) Parent!;
+
+            ControlPanel? ctrlPanel = new()
+            {
+                Dock = DockStyle.Fill
+            };
+
+            DeleteActiveControl();
+            frmMain.Controls.Clear();
+            frmMain.Controls.Add(ctrlPanel);
+
+            ToolStrip a = (ToolStrip) ctrlPanel.Controls.Find("tspCont", true).First();
+            ToolStripTextBox txt = (ToolStripTextBox) a.Items.Find("txtSearch", true).First();
+            DataGridView b = (DataGridView) ctrlPanel.Controls.Find("gridInv", true).First();
+
+            await Task.Delay(5); 
+            if (b.DataSource != null)
+            {
+                txt.TextBox.Text = productName;
+                txt.TextBox.ForeColor = Color.Black;
+            }
+   
+        }
+
+        private string ToTitleCase(string text)
+        {
+            TextInfo formatedText = CultureInfo.CurrentCulture.TextInfo;
+            return formatedText.ToTitleCase(text.ToLowerInvariant());
         }
 
         private void btnEmployee_Click(object sender, EventArgs e)
@@ -139,6 +216,18 @@ namespace Project.Forms
             {
                 InsertEmployee(txtId.Text, txtName.Text, txtEmail.Text, dtAdDate.Value, cmbPos.Text, txtTempPsw.Text);
                 btnEmployee_Click(sender, e);
+                return;
+            }
+
+            if (ProductExists(txtProductName.Text))
+            {
+                var formatedText = ToTitleCase(txtProductName.Text);
+                var response = MessageBox.Show($"Produto \"{formatedText}\" já cadastrado! \n Deseja alterar o cadastro?", "Produto Encontrado", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                if (response == DialogResult.Yes)
+                {
+                    GoToProduct();
+                }
                 return;
             }
 
