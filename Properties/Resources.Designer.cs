@@ -113,6 +113,16 @@ namespace Project.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap showPsw {
+            get {
+                object obj = ResourceManager.GetObject("showPsw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap updateInv {
             get {
                 object obj = ResourceManager.GetObject("updateInv", resourceCulture);

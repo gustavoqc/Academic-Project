@@ -54,12 +54,12 @@
             // 
             txtId.BackColor = Color.FromArgb(224, 224, 224);
             txtId.BorderStyle = BorderStyle.FixedSingle;
-            txtId.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtId.Font = new Font("Arial", 14F);
             txtId.Location = new Point(58, 42);
             txtId.MaxLength = 11;
             txtId.MinimumSize = new Size(0, 25);
             txtId.Name = "txtId";
-            txtId.Size = new Size(164, 32);
+            txtId.Size = new Size(164, 29);
             txtId.TabIndex = 0;
             txtId.TextAlign = HorizontalAlignment.Center;
             txtId.WordWrap = false;
@@ -105,14 +105,15 @@
             // 
             txtPsw.BackColor = Color.FromArgb(224, 224, 224);
             txtPsw.BorderStyle = BorderStyle.FixedSingle;
-            txtPsw.Font = new Font("Arial", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtPsw.Font = new Font("Arial", 14F);
             txtPsw.Location = new Point(58, 115);
             txtPsw.MinimumSize = new Size(0, 25);
             txtPsw.Name = "txtPsw";
             txtPsw.PasswordChar = '*';
-            txtPsw.Size = new Size(164, 32);
+            txtPsw.Size = new Size(164, 29);
             txtPsw.TabIndex = 1;
             txtPsw.TextAlign = HorizontalAlignment.Center;
+            txtPsw.UseSystemPasswordChar = true;
             txtPsw.WordWrap = false;
             // 
             // frmLogin

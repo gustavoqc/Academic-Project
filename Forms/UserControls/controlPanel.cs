@@ -1,7 +1,9 @@
 ﻿using System.Data;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Relational;
 using Project.Forms;
+using Project.Services;
 using Project.Services.Database;
 
 namespace Project.Controls
@@ -15,15 +17,22 @@ namespace Project.Controls
 
         private void LoadCategories()
         {
-            cmbCateg.Items.Clear();
+            DatabaseQuery db = new();
 
-            if (Properties.Settings.Default.CategoryOptions != null)
+            var queryParams = new SelectQueryParams
             {
-                foreach (var value in Properties.Settings.Default.CategoryOptions)
-                {
-                    cmbCateg.Items.Add(value ?? "");
-                }
-            }
+                TableName = "categoria_produto",
+
+                Columns =
+                [
+                    new() { Name = "id_categ"},
+                    new() { Name = "nome_categ"}
+                ],
+            };
+
+            cmbCateg.DataSource = db.SelectQuery(queryParams);
+            cmbCateg.DisplayMember = "nome_categ";
+            cmbCateg.ValueMember = "id_categ";
         }
 
         private static void ClearTextBoxes(Panel panel)
@@ -61,11 +70,11 @@ namespace Project.Controls
             btnDeny.Visible = isRowSelected;
         }
 
-        private async Task<DataTable?> InventoryData()
+        private static async Task<DataTable?> InventoryData()
         {
             return await Task.Run(() =>
             {
-                Database db = new();
+                DatabaseQuery db = new();
 
                 var queryParams = new SelectQueryParams
                 {
@@ -73,22 +82,48 @@ namespace Project.Controls
 
                     Columns =
                     [
-                        new() { Name = "id_produto", Alias = "ID" },
-                        new() { Name = "nome_produto", Alias = "Produto" },
-                        new() { Name = "categoria_produto", Alias = "Categoria" },
-                        new() { Name = "valor_produto", Alias = "Valor" },
-                        new() { Name = "descricao_produto", Alias = "Descrição" },
-                        new() { Name = "estoque_produto", Alias = "Qtde" }
+                        new() { Name = "id_prod", Alias = "ID" },
+                        new() { Name = "nome_prod", Alias = "Produto" },
+                        new() { Name = "C.nome_categ", Alias = "Categoria" },
+                        new() { Name = "valor_prod", Alias = "Valor" },
+                        new() { Name = "descricao_prod", Alias = "Descrição" },
+                        new() { Name = "estoque_prod", Alias = "Qtde" }
                     ],
-
-                    OrderBy = "estoque_produto ASC"
+                    InnerJoin = ["categoria_produto C ON categoria_prod = C.id_categ"],
+                    OrderBy = "estoque_prod ASC"
                 };
 
                 return db.SelectQuery(queryParams) ?? null;
             });
         }
 
-        private async Task<DataTable?> TransactionData(char status)
+        private static async Task<DataTable?> EmployeeData()
+        {
+            return await Task.Run(() =>
+            {
+                DatabaseQuery db = new();
+
+                var queryParams = new SelectQueryParams
+                {
+                    TableName = "funcionario",
+
+                    Columns =
+                    [
+                        new() { Name = "id_func", Alias = "ID" },
+                        new() { Name = "nome_func", Alias = "Nome" },
+                        new() { Name = "C.nome_cargo", Alias = "Cargo" },
+                        new() { Name = "email_func", Alias = "Email" },
+                        new() { Name = "dt_admissao", Alias = "Admissão" }
+                    ],
+                    InnerJoin = ["cargo_func C ON cargo_func = C.id_cargo"],
+                    OrderBy = "C.nome_cargo ASC"
+                };
+
+                return db.SelectQuery(queryParams) ?? null;
+            });
+        }
+
+        private static async Task<DataTable?> TransactionData(char status)
         {
             string transStatus = "";
 
@@ -104,7 +139,7 @@ namespace Project.Controls
 
             return await Task.Run(() =>
             {
-                Database db = new();
+                DatabaseQuery db = new();
 
                 var queryParams = new SelectQueryParams
                 {
@@ -137,6 +172,8 @@ namespace Project.Controls
 
         private async void LoadData(string data)
         {
+            txtSearch.Text = "";
+            txtSearch_Leave("", EventArgs.Empty);
             pgbData.Visible = true;
             gridInv.Columns.Clear();
             gridInv.DataSource = "";
@@ -145,6 +182,10 @@ namespace Project.Controls
             {
                 case "I":
                     gridInv.DataSource = await InventoryData();
+                    gridInv.DefaultCellStyle.BackColor = Color.White;
+                    break;
+                case "E":
+                    gridInv.DataSource = await EmployeeData();
                     gridInv.DefaultCellStyle.BackColor = Color.White;
                     break;
                 case "TA":
@@ -163,17 +204,19 @@ namespace Project.Controls
 
         private void BtnInventory_Click(object sender, EventArgs e)
         {
-            editProduct.Visible = false;
-            HideActionButtons();
             LoadData("I");
             gridInv.Tag = "I";
             txtSearch.Tag = "I";
-            txtSearch.Text = "";
-            txtSearch_Leave(sender, e);
         }
 
         private void ControlPanel_Load(object sender, EventArgs e)
         {
+            var pnlControls = Parent!.Parent!.Controls.Find("pnlControls", true).First();
+            var btnReg = pnlControls!.Controls.Find("btnReg", true).First();
+
+            if (btnReg != null && btnReg.Visible)
+                btnEntries.DropDownItems.Add("Colaboradores", null, btnEmployee_Click!);
+
             HideActionButtons();
             LoadData("I");
             txtSearch.Tag = "I";
@@ -190,7 +233,7 @@ namespace Project.Controls
 
                     if (value <= 5)
                         e.CellStyle.BackColor = Color.FromArgb(255, 160, 160);
-                    else if (value > 5 && value < 15)
+                    else if (value > 5 && value <= 15)
                         e.CellStyle.BackColor = Color.FromArgb(255, 255, 192);
                     else
                         e.CellStyle.BackColor = Color.FromArgb(192, 255, 192);
@@ -237,15 +280,16 @@ namespace Project.Controls
 
         private void btnDeleteProd_Click(object sender, EventArgs e)
         {
-            var dialog = MessageBox.Show("Deseja deletar o produto?", "Deletar", MessageBoxButtons.YesNo);
+            var dialog = MessageBox.Show($"Deseja realmente excluir o produto \"{gridInv.SelectedCells[1].Value}\" permanentemente?", "Excluir Produto", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
             if (dialog == DialogResult.Yes)
             {
-                Database db = new();
+                DatabaseQuery db = new();
 
                 var queryParams = new DeleteQueryParams
                 {
                     TableName = "produto",
-                    Where = new() { Column = "id_produto", Value = gridInv.SelectedCells[0].Value.ToString() ?? "" }
+                    Where = new() { Column = "id_prod", Value = gridInv.SelectedCells[0].Value.ToString() ?? "" }
                 };
 
                 db.DeleteQuery(queryParams);
@@ -255,9 +299,9 @@ namespace Project.Controls
 
         private void gridInv_SelectionChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(gridInv.Tag?.ToString()) && !gridInv.Tag.Equals("TH"))
+            if (!string.IsNullOrEmpty(gridInv.Tag?.ToString()) && !gridInv.Tag.Equals("TH") && !gridInv.Tag.Equals("E"))
             {
-                ShowActionButtons(char.Parse(gridInv.Tag?.ToString()?[..1] ?? ""));
+                ShowActionButtons(char.Parse(gridInv.Tag.ToString()![..1]!));
             }
         }
 
@@ -273,13 +317,13 @@ namespace Project.Controls
 
             if (result == DialogResult.OK)
             {
-                Database db = new();
+                DatabaseQuery db = new();
 
                 var queryParams = new UpdateQueryParams
                 {
                     TableName = "produto",
-                    Columns = [new() { Name = "estoque_produto", Value = newQty.ToString() }],
-                    Where = new() { Column = "id_produto", Value = gridInv.SelectedCells[0].Value.ToString() ?? "" }
+                    Columns = [new() { Name = "estoque_prod", Value = newQty.ToString() }],
+                    Where = new() { Column = "id_prod", Value = gridInv.SelectedCells[0].Value.ToString() ?? "" }
                 };
 
                 db.UpdateQuery(queryParams);
@@ -320,13 +364,14 @@ namespace Project.Controls
             else
                 imgProd.Image = imgProd.InitialImage;
 
+
             editProduct.BringToFront();
             editProduct.Visible = true;
         }
 
         private void btnApprove_Click(object sender, EventArgs e)
         {
-            Database db = new();
+            DatabaseQuery db = new();
 
             var queryParams = new UpdateQueryParams
             {
@@ -349,7 +394,7 @@ namespace Project.Controls
 
         private void btnDeny_Click(object sender, EventArgs e)
         {
-            Database db = new();
+            DatabaseQuery db = new();
 
             var queryParams = new UpdateQueryParams
             {
@@ -371,27 +416,37 @@ namespace Project.Controls
 
         private void btnEditProduct_Click(object sender, EventArgs e)
         {
+            var validFields = FieldValidation.ValidateControls(editProduct);
+            var errorMessage = FieldValidation.SetMessage(validFields);
+
+            if (validFields.Any(key => key.Key > 0))
+            {
+                MessageBox.Show($"Todos os campos devem ser preenchidos corretamente! \n\n{errorMessage}", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
             string folderPath = Path.Combine(documentsPath ?? "C://", "Products_Images");
             string savePath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
-            Database db = new();
+            DatabaseQuery db = new();
 
             var queryParams = new UpdateQueryParams
             {
                 TableName = "produto",
                 Columns =
                 [
-                    new() {Name = "nome_produto", Value = $"\"{txtProductName.Text}\""},
-                    new() {Name = "categoria_produto", Value = $"\"{cmbCateg.Text}\""},
-                    new() {Name = "valor_produto", Value = numValue.Value.ToString().Replace(',', '.')},
-                    new() {Name = "descricao_produto", Value = $"\"{txtDesc.Text}\""}
+                    new() {Name = "nome_prod", Value = $"\"{txtProductName.Text}\""},
+                    new() {Name = "categoria_prod", Value = $"\"{cmbCateg.SelectedValue}\""},
+                    new() {Name = "valor_prod", Value = numValue.Value.ToString().Replace(',', '.')},
+                    new() {Name = "descricao_prod", Value = $"\"{txtDesc.Text}\""}
                 ],
-                Where = new() { Column = "id_produto", Value = $"{int.Parse(txtProdId.Text)}" }
+                Where = new() { Column = "id_prod", Value = $"{int.Parse(txtProdId.Text)}" }
             };
 
             if (db.UpdateQuery(queryParams) > 0)
             {
                 string? imgTag = imgProd.Tag?.ToString();
+
                 if (imgTag != null)
                     File.Copy(imgTag, savePath, true);
 
@@ -401,6 +456,7 @@ namespace Project.Controls
             }
 
             editProduct.Visible = false;
+            editProduct.SendToBack();
             LoadData("I");
         }
 
@@ -436,15 +492,14 @@ namespace Project.Controls
 
         private void editProduct_VisibleChanged(object sender, EventArgs e)
         {
-
-            if (!editProduct.Visible)
+            if (editProduct.Visible)
             {
-                txtSearch.Visible = true;
-                gridInv.ClearSelection();
+                txtSearch.Visible = false;
                 return;
             }
 
-            txtSearch.Visible = false;
+            txtSearch.Visible = true;
+            gridInv.ClearSelection();
         }
 
         private void txtSearch_Enter(object sender, EventArgs e)
@@ -495,24 +550,30 @@ namespace Project.Controls
 
         private string FilterSearch(string searchText)
         {
-            searchText = searchText.Replace("'", "''");
+            searchText = searchText.Replace("'", "\\'");
             switch (txtSearch.Tag)
             {
+                case "E":
+                    return $"Nome LIKE '%{searchText}%' OR Convert(Admissão, 'System.String') LIKE '%{searchText}%' OR Cargo LIKE '{searchText}%'";
                 case "I":
                     return $"Produto LIKE '%{searchText}%' OR Categoria LIKE '{searchText}%'";
                 case "T":
                     return $"Cliente LIKE '{searchText}%'";
+                default:
+                    return "";
             }
-
-            return "";
         }
 
         private void gridInv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            gridInv.Columns[0].Visible = false;
+            string tag = gridInv.Tag!.ToString()![..1];
+
             gridInv.Columns[1].Visible = true;
 
-            if (txtSearch.Tag?.Equals("T") ?? false)
+            if (!tag.Equals("E"))
+                gridInv.Columns[0].Visible = false;
+
+            if (tag.Equals("T"))
                 gridInv.Columns[1].Visible = false;
         }
 
@@ -522,6 +583,22 @@ namespace Project.Controls
             editProduct.Visible = false;
             HideActionButtons();
             txtSearch.Tag = "T";
+            txtSearch.Text = "";
+            txtSearch_Leave(sender, e);
+        }
+
+        private void btnEmployee_Click(object sender, EventArgs e)
+        {
+            LoadData("E");
+            txtSearch.Tag = "E";
+            gridInv.Tag = "E";
+        }
+
+        private void btnEntries_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            pnlProduct.Focus();
+            editProduct.Visible = false;
+            HideActionButtons();
             txtSearch.Text = "";
             txtSearch_Leave(sender, e);
         }

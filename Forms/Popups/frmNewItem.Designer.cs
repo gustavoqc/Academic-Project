@@ -1,6 +1,6 @@
 ﻿namespace Project.Forms
 {
-    partial class frmNewCategory
+    partial class frmNewItem
     {
         /// <summary>
         /// Required designer variable.
@@ -28,45 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            btnAddCategory = new Button();
-            label1 = new Label();
-            txtCategory = new TextBox();
+            btnAddItem = new Button();
+            lblText = new Label();
+            txtNewItem = new TextBox();
             btnCancel = new Button();
             SuspendLayout();
             // 
-            // btnAddCategory
+            // btnAddItem
             // 
-            btnAddCategory.AutoSize = true;
-            btnAddCategory.BackColor = Color.Silver;
-            btnAddCategory.DialogResult = DialogResult.OK;
-            btnAddCategory.FlatAppearance.MouseDownBackColor = Color.FromArgb(224, 224, 224);
-            btnAddCategory.FlatAppearance.MouseOverBackColor = Color.FromArgb(224, 224, 224);
-            btnAddCategory.FlatStyle = FlatStyle.Flat;
-            btnAddCategory.Font = new Font("Arial", 11.25F, FontStyle.Bold);
-            btnAddCategory.Location = new Point(28, 105);
-            btnAddCategory.Name = "btnAddCategory";
-            btnAddCategory.Size = new Size(104, 30);
-            btnAddCategory.TabIndex = 1;
-            btnAddCategory.Text = "Salvar";
-            btnAddCategory.UseVisualStyleBackColor = false;
-            btnAddCategory.Click += btnAddCategory_Click;
+            btnAddItem.AutoSize = true;
+            btnAddItem.BackColor = Color.Silver;
+            btnAddItem.DialogResult = DialogResult.OK;
+            btnAddItem.FlatAppearance.MouseDownBackColor = Color.FromArgb(224, 224, 224);
+            btnAddItem.FlatAppearance.MouseOverBackColor = Color.FromArgb(224, 224, 224);
+            btnAddItem.FlatStyle = FlatStyle.Flat;
+            btnAddItem.Font = new Font("Arial", 11.25F, FontStyle.Bold);
+            btnAddItem.Location = new Point(28, 105);
+            btnAddItem.Name = "btnAddItem";
+            btnAddItem.Size = new Size(104, 30);
+            btnAddItem.TabIndex = 2;
+            btnAddItem.Text = "Salvar";
+            btnAddItem.UseVisualStyleBackColor = false;
+            btnAddItem.Click += btnAddCategory_Click;
             // 
-            // label1
+            // lblText
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Arial", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(39, 22);
-            label1.Name = "label1";
-            label1.Size = new Size(202, 22);
-            label1.TabIndex = 1;
-            label1.Text = "Digite a nova categoria";
+            lblText.AutoSize = true;
+            lblText.Font = new Font("Arial", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblText.Location = new Point(39, 22);
+            lblText.Name = "lblText";
+            lblText.Size = new Size(202, 22);
+            lblText.TabIndex = 1;
+            lblText.Text = "Digite a nova categoria";
             // 
-            // txtCategory
+            // txtNewItem
             // 
-            txtCategory.Location = new Point(28, 60);
-            txtCategory.Name = "txtCategory";
-            txtCategory.Size = new Size(225, 26);
-            txtCategory.TabIndex = 2;
+            txtNewItem.Location = new Point(28, 60);
+            txtNewItem.Name = "txtNewItem";
+            txtNewItem.Size = new Size(225, 26);
+            txtNewItem.TabIndex = 1;
             // 
             // btnCancel
             // 
@@ -84,31 +84,32 @@
             btnCancel.Text = "Cancelar";
             btnCancel.UseVisualStyleBackColor = false;
             // 
-            // frmNewCategory
+            // frmNewItem
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(224, 224, 224);
             ClientSize = new Size(286, 163);
             Controls.Add(btnCancel);
-            Controls.Add(txtCategory);
-            Controls.Add(label1);
-            Controls.Add(btnAddCategory);
+            Controls.Add(txtNewItem);
+            Controls.Add(lblText);
+            Controls.Add(btnAddItem);
             Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Margin = new Padding(4);
-            Name = "frmNewCategory";
+            Name = "frmNewItem";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Nova Categoria";
+            Load += frmNewItem_Load;
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Button btnAddCategory;
-        private Label label1;
-        private TextBox txtCategory;
+        private Button btnAddItem;
+        private Label lblText;
+        private TextBox txtNewItem;
         private Button btnCancel;
     }
 }

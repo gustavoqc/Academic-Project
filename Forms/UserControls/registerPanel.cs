@@ -1,14 +1,18 @@
-﻿using System.Globalization;
+﻿using System.Data;
+using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using MySqlX.XDevAPI.Common;
 using Project.Controls;
+using Project.Services;
 using Project.Services.Database;
 
 namespace Project.Forms
 {
-    public partial class registerPanel : UserControl
+    public partial class RegisterPanel : UserControl
     {
-        public registerPanel()
+        public RegisterPanel()
         {
             InitializeComponent();
         }
@@ -47,43 +51,71 @@ namespace Project.Forms
 
         private void LoadCategories()
         {
-            cmbCateg.Items.Clear();
+            DatabaseQuery db = new();
 
-            if (Properties.Settings.Default.CategoryOptions != null)
+            var queryParams = new SelectQueryParams
             {
-                foreach (var value in Properties.Settings.Default.CategoryOptions)
-                {
-                    cmbCateg.Items.Add(value ?? "");
-                }
-            }
+                TableName = "categoria_produto",
+
+                Columns =
+                [
+                    new() { Name = "id_categ"},
+                    new() { Name = "nome_categ"}
+                ],
+            };
+
+            cmbCateg.DataSource = db.SelectQuery(queryParams);
+            cmbCateg.DisplayMember = "nome_categ";
+            cmbCateg.ValueMember = "id_categ";
+        }
+
+        private void LoadPositions()
+        {
+            DatabaseQuery db = new();
+
+            var queryParams = new SelectQueryParams
+            {
+                TableName = "cargo_func",
+
+                Columns =
+                [
+                    new() { Name = "id_cargo"},
+                    new() { Name = "nome_cargo"}
+                ],
+            };
+
+            cmbPos.DataSource = db.SelectQuery(queryParams);
+            cmbPos.DisplayMember = "nome_cargo";
+            cmbPos.ValueMember = "id_cargo";
         }
 
         private bool ProductExists(string productName)
         {
-            Database db = new();
+            DatabaseQuery db = new();
 
             var queryParams = new SelectQueryParams
             {
                 TableName = "produto",
-                Where = $"REPLACE(nome_produto, ' ', '') LIKE REPLACE(\"%{productName}%\", ' ', '')"
+                Where = $"REPLACE(nome_prod, ' ', '') LIKE REPLACE(\"%{productName}%\", ' ', '')"
             };
 
             var result = db.SelectQuery(queryParams);
 
             if (result != null && result.Rows.Count > 0)
-                return true; 
+                return true;
 
             return false;
         }
         private void btnProducts_Click(object sender, EventArgs e)
         {
             ClearTextBoxes(pnlProduct);
-            Database db = new();
+            txtProductName.Focus();
+            DatabaseQuery db = new();
 
             var queryParams = new SelectQueryParams
             {
                 TableName = "produto",
-                Columns = [new() { Name = "MAX(id_produto) + 1" }]
+                Columns = [new() { Name = "MAX(id_prod) + 1" }]
             };
 
             string? ProdId = db.SelectQuery(queryParams)?.Rows[0][0]?.ToString()?.PadLeft(5, '0');
@@ -99,42 +131,41 @@ namespace Project.Forms
             numQty.Value = 0;
         }
 
-        private static void InsertEmployee(string id, string name, string email, DateTime admDate, string position, string psw)
+        private static void InsertEmployee(string id, string name, string email, DateTime admDate, int position, string psw)
         {
-            Database db = new();
+            DatabaseQuery db = new();
 
             var queryParams = new InsertQueryParams
             {
                 TableName = "funcionario",
                 Columns = ["nome_func", "cpf_func", "cargo_func", "email_func", "dt_admissao", "senha_func"],
-                Values = [$"\"{name}\"", $"\"{id}\"", $"\"{position}\"", $"\"{email}\"", $"\"{admDate:yyyy-MM-dd}\"", $"md5(\"{psw}\")"]
+                Values = [$"\"{name}\"", $"\"{id}\"", $"{position}", $"\"{email}\"", $"\"{admDate:yyyy-MM-dd}\"", $"md5(\"{psw}\")"]
             };
 
             if (db.InsertQuery(queryParams) > 0)
             {
-                MessageBox.Show("Dados inseridos com sucesso.");
+                MessageBox.Show("Dados inseridos com sucesso.", "Cadastro concluído", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            MessageBox.Show("Erro ao inserir dados, tente novamente mais tarde.");
         }
 
-        private int InsertProducts(string name, string category, string value, string amount, string desc, string img_path)
+        private int InsertProducts(string name, int category, string value, string amount, string desc, string img_path)
         {
-            Database db = new();
-            
+            DatabaseQuery db = new();
+
             var queryParams = new InsertQueryParams
             {
                 TableName = "produto",
-                Columns = ["nome_produto", "categoria_produto", "valor_produto", "estoque_produto", "descricao_produto", "imagem_produto_path"],
-                Values = [$"\"{ToTitleCase(name)}\"", $"\"{category}\"", value.Replace(',', '.'), amount, $"\"{desc}\"", $"\"{img_path}\""]
+                Columns = ["nome_prod", "categoria_prod", "valor_prod", "estoque_prod", "descricao_prod", "imagem_prod_path"],
+                Values = [$"\"{ToTitleCase(name)}\"", $"{category}", value.Replace(',', '.'), amount, $"\"{desc}\"", $"\"{img_path}\""]
             };
 
             if (db.InsertQuery(queryParams) > 0)
             {
-                MessageBox.Show("Dados inseridos com sucesso.");
+                MessageBox.Show("Dados inseridos com sucesso.", "Cadastro concluído", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 1;
             }
-            MessageBox.Show("Erro ao inserir dados, tente novamente mais tarde.");
+
             return 0;
         }
 
@@ -166,7 +197,7 @@ namespace Project.Forms
         private async void GoToProduct()
         {
             string productName = txtProductName.Text;
-            Panel frmMain = (Panel) Parent!;
+            Panel frmMain = (Panel)Parent!;
 
             ControlPanel? ctrlPanel = new()
             {
@@ -177,17 +208,17 @@ namespace Project.Forms
             frmMain.Controls.Clear();
             frmMain.Controls.Add(ctrlPanel);
 
-            ToolStrip a = (ToolStrip) ctrlPanel.Controls.Find("tspCont", true).First();
-            ToolStripTextBox txt = (ToolStripTextBox) a.Items.Find("txtSearch", true).First();
-            DataGridView b = (DataGridView) ctrlPanel.Controls.Find("gridInv", true).First();
+            var tspCont = ctrlPanel.Controls.Find("tspCont", true).First() as ToolStrip;
+            var txtSearch = tspCont!.Items.Find("txtSearch", true).First() as ToolStripTextBox;
+            var grdData = ctrlPanel.Controls.Find("gridInv", true).First() as DataGridView;
 
-            await Task.Delay(5); 
-            if (b.DataSource != null)
+            await Task.Delay(5);
+            if (grdData!.DataSource != null)
             {
-                txt.TextBox.Text = productName;
-                txt.TextBox.ForeColor = Color.Black;
+                txtSearch!.TextBox.Text = productName;
+                txtSearch.TextBox.ForeColor = Color.Black;
             }
-   
+
         }
 
         private string ToTitleCase(string text)
@@ -203,6 +234,8 @@ namespace Project.Forms
             pnlProduct.Enabled = false;
 
             ClearTextBoxes(pnlEmployee);
+            LoadPositions();
+            txtId.Focus();
             txtTempPsw.Text = RandomPassword();
             dtAdDate.Value = DateTime.Now;
             cmbPos.SelectedIndex = -1;
@@ -211,11 +244,28 @@ namespace Project.Forms
         private void btnRegister_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
+            var validFields = FieldValidation.ValidateControls(pnlProduct);
+            var errorMessage = FieldValidation.SetMessage(validFields);
 
             if (button.Tag is string tag && tag.Equals("E"))
             {
-                InsertEmployee(txtId.Text, txtName.Text, txtEmail.Text, dtAdDate.Value, cmbPos.Text, txtTempPsw.Text);
+                validFields = FieldValidation.ValidateControls(pnlEmployee);
+                errorMessage = FieldValidation.SetMessage(validFields);
+
+                if (validFields.Any(key => key.Key > 0))
+                {
+                    MessageBox.Show($"Todos os campos devem ser preenchidos corretamente! \n\n{errorMessage}", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                
+                InsertEmployee(txtId.Text, txtName.Text.Replace("'", "\\'"), txtEmail.Text.Replace("'", "\\'"), dtAdDate.Value, (int)cmbPos.SelectedValue!, txtTempPsw.Text);
                 btnEmployee_Click(sender, e);
+                return;
+            }
+
+            if (validFields.Any(key => key.Key > 0))
+            {
+                MessageBox.Show($"Todos os campos devem ser preenchidos corretamente! \n\n{errorMessage}", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -234,8 +284,8 @@ namespace Project.Forms
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
             string folderPath = Path.Combine(documentsPath ?? "C://", "Products_Images");
             string savePath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
-            int rows = InsertProducts(txtProductName.Text, cmbCateg.Text, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text, $"Product_{txtProdId.Text}.png");
-            
+            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "''"), $"Product_{txtProdId.Text.Replace("'", "''")}.png");
+
             if (rows == 1)
             {
                 if (!Directory.Exists(folderPath))
@@ -270,35 +320,85 @@ namespace Project.Forms
             }
         }
 
-        private void btnAddCateg_Click(object sender, EventArgs e)
+        private void btnAddItem_Click(object sender, EventArgs e)
         {
-            frmNewCategory frmNewCategory = new();
-            if (frmNewCategory.ShowDialog() == DialogResult.OK)
+            char tag = Convert.ToChar(((Button)sender).Tag);
+
+            frmNewItem frmNewItem = new(tag);
+
+            if (frmNewItem.ShowDialog() == DialogResult.OK)
             {
-                string newCategory = frmNewCategory.CategoryName.Trim().ToLower();
-                newCategory = char.ToUpper(newCategory[0]) + newCategory.Substring(1);
-
-                if (!string.IsNullOrWhiteSpace(newCategory) && !cmbCateg.Items.Contains(newCategory))
+                if (string.IsNullOrEmpty(frmNewItem.newItem))
                 {
-                    var settings = Properties.Settings.Default;
-                    settings.CategoryOptions ??= [];
+                    var item = tag.Equals('C') ? "Nova Categoria" : "Novo Cargo";
+                    MessageBox.Show($"Campo \"{item}\" deve ser preenchido corretamente!!", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                    cmbCateg.Items.Add(newCategory);
+                SelectQueryParams queryParams;
+                InsertQueryParams insertParams;
+                DatabaseQuery db = new();
 
-                    if (!settings.CategoryOptions.Contains(newCategory))
+                string newItem = ToTitleCase(frmNewItem.newItem.Trim()).Replace("'", "\\'");
+
+                if (tag.Equals('C'))
+                {
+                    queryParams = new SelectQueryParams
                     {
-                        settings.CategoryOptions.Add(newCategory);
-                        settings.Save();
-                    }
-
-                    LoadCategories();
+                        TableName = "categoria_produto",
+                        Where = $"nome_categ LIKE \'%{newItem}%\' OR SOUNDEX(nome_categ) LIKE SOUNDEX(\'{newItem}\')"
+                    };
                 }
                 else
                 {
-                    MessageBox.Show("Categoria já existe!");
+                    queryParams = new SelectQueryParams
+                    {
+                        TableName = "cargo_func",
+                        Where = $"nome_cargo LIKE \'%{newItem}%\' OR SOUNDEX(nome_cargo) LIKE SOUNDEX(\'{newItem}\')"
+                    };
                 }
 
-                cmbCateg.SelectedItem = newCategory;
+                var result = db.SelectQuery(queryParams);
+                int itemId = result?.Rows.Count > 0 ? Convert.ToInt32(result?.Rows[0][0]) : -1;
+
+                if (result != null && result.Rows.Count < 1)
+                {
+                    if (!string.IsNullOrWhiteSpace(newItem))
+                    {
+                        if (tag.Equals('C'))
+                        {
+                            insertParams = new InsertQueryParams
+                            {
+                                TableName = "categoria_produto",
+                                Columns = ["nome_categ"],
+                                Values = [$"\'{newItem}\'"]
+                            };
+
+                            db.InsertQuery(insertParams);
+                            LoadCategories();
+                        }
+                        else
+                        {
+                            insertParams = new InsertQueryParams
+                            {
+                                TableName = "cargo_func",
+                                Columns = ["nome_cargo"],
+                                Values = [$"\'{newItem}\'"]
+                            };
+
+                            db.InsertQuery(insertParams);
+                            LoadPositions();
+                        }
+
+                    }
+                }
+                else
+                    MessageBox.Show($"Item \"{result?.Rows[0][1]}\" já cadastrado!", "Item encontrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                if (tag.Equals('C'))
+                    cmbCateg.SelectedValue = itemId;
+                else
+                    cmbPos.SelectedValue = itemId;
             }
         }
 

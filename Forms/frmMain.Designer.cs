@@ -32,9 +32,14 @@
             btnReg = new Button();
             pnlControls = new FlowLayoutPanel();
             btnControl = new Button();
+            lblID = new Label();
+            btnLogOut = new Button();
             tooltip = new ToolTip(components);
             pnlMain = new Panel();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            btnProfile = new Button();
             pnlControls.SuspendLayout();
+            flowLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // btnReg
@@ -90,6 +95,37 @@
             btnControl.UseVisualStyleBackColor = false;
             btnControl.Click += btnControl_Click;
             // 
+            // lblID
+            // 
+            lblID.AutoSize = true;
+            lblID.Enabled = false;
+            lblID.Location = new Point(342, 11);
+            lblID.Name = "lblID";
+            lblID.Size = new Size(23, 18);
+            lblID.TabIndex = 0;
+            lblID.Text = "ID";
+            lblID.TextAlign = ContentAlignment.MiddleCenter;
+            lblID.Visible = false;
+            // 
+            // btnLogOut
+            // 
+            btnLogOut.AutoSize = true;
+            btnLogOut.BackColor = Color.FromArgb(255, 192, 192);
+            btnLogOut.FlatAppearance.BorderColor = Color.Red;
+            btnLogOut.FlatAppearance.MouseDownBackColor = Color.DarkGray;
+            btnLogOut.FlatAppearance.MouseOverBackColor = Color.DarkGray;
+            btnLogOut.FlatStyle = FlatStyle.Flat;
+            btnLogOut.Font = new Font("Arial", 10F, FontStyle.Bold);
+            btnLogOut.ForeColor = Color.Maroon;
+            btnLogOut.Location = new Point(81, 5);
+            btnLogOut.Margin = new Padding(5, 5, 0, 5);
+            btnLogOut.Name = "btnLogOut";
+            btnLogOut.Size = new Size(63, 31);
+            btnLogOut.TabIndex = 3;
+            btnLogOut.Text = "Sair";
+            btnLogOut.UseVisualStyleBackColor = false;
+            btnLogOut.Click += btnLogOut_Click;
+            // 
             // pnlMain
             // 
             pnlMain.BorderStyle = BorderStyle.FixedSingle;
@@ -98,12 +134,46 @@
             pnlMain.Size = new Size(662, 324);
             pnlMain.TabIndex = 3;
             // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.AutoSize = true;
+            flowLayoutPanel1.Controls.Add(btnLogOut);
+            flowLayoutPanel1.Controls.Add(btnProfile);
+            flowLayoutPanel1.FlowDirection = FlowDirection.RightToLeft;
+            flowLayoutPanel1.Location = new Point(498, 0);
+            flowLayoutPanel1.Margin = new Padding(5, 3, 3, 3);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Padding = new Padding(5, 0, 0, 0);
+            flowLayoutPanel1.Size = new Size(149, 41);
+            flowLayoutPanel1.TabIndex = 4;
+            // 
+            // btnProfile
+            // 
+            btnProfile.AutoSize = true;
+            btnProfile.BackColor = Color.LightGray;
+            btnProfile.FlatAppearance.BorderColor = Color.Black;
+            btnProfile.FlatAppearance.MouseDownBackColor = Color.DarkGray;
+            btnProfile.FlatAppearance.MouseOverBackColor = Color.DarkGray;
+            btnProfile.FlatStyle = FlatStyle.Flat;
+            btnProfile.Font = new Font("Arial", 10F, FontStyle.Bold);
+            btnProfile.ForeColor = Color.Black;
+            btnProfile.Location = new Point(9, 5);
+            btnProfile.Margin = new Padding(5);
+            btnProfile.Name = "btnProfile";
+            btnProfile.Size = new Size(62, 31);
+            btnProfile.TabIndex = 2;
+            btnProfile.Text = "&Perfil";
+            btnProfile.UseVisualStyleBackColor = false;
+            btnProfile.Click += btnProfile_Click;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(224, 224, 224);
             ClientSize = new Size(649, 361);
+            Controls.Add(lblID);
+            Controls.Add(flowLayoutPanel1);
             Controls.Add(pnlMain);
             Controls.Add(pnlControls);
             Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -117,6 +187,8 @@
             Load += frmMain_Load;
             pnlControls.ResumeLayout(false);
             pnlControls.PerformLayout();
+            flowLayoutPanel1.ResumeLayout(false);
+            flowLayoutPanel1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -127,5 +199,9 @@
         private Button btnControl;
         private ToolTip tooltip;
         private Panel pnlMain;
+        private Button btnLogOut;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private Button btnProfile;
+        private Label lblID;
     }
 }

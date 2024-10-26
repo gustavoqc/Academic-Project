@@ -38,8 +38,9 @@
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             tspCont = new ToolStrip();
-            btnInventory = new ToolStripButton();
-            toolStripSeparator1 = new ToolStripSeparator();
+            btnEntries = new ToolStripDropDownButton();
+            btnInventory = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
             btnTransactions = new ToolStripDropDownButton();
             btnActiveTrans = new ToolStripMenuItem();
             btnHistoryTrans = new ToolStripMenuItem();
@@ -79,43 +80,53 @@
             // 
             tspCont.AllowMerge = false;
             tspCont.BackColor = Color.FromArgb(224, 224, 224);
-            tspCont.CanOverflow = false;
             tspCont.Font = new Font("Arial", 10F);
             tspCont.GripStyle = ToolStripGripStyle.Hidden;
             tspCont.ImageScalingSize = new Size(50, 50);
-            tspCont.Items.AddRange(new ToolStripItem[] { btnInventory, toolStripSeparator1, btnTransactions, pgbData, txtSearch, btnDeleteProd, btnUpdateProduct, btnUpdateInv, btnDeny, btnApprove });
+            tspCont.Items.AddRange(new ToolStripItem[] { btnEntries, toolStripSeparator2, btnTransactions, pgbData, txtSearch, btnDeleteProd, btnUpdateProduct, btnUpdateInv, btnDeny, btnApprove });
             tspCont.Location = new Point(0, 0);
             tspCont.Name = "tspCont";
             tspCont.Size = new Size(662, 35);
             tspCont.Stretch = true;
             tspCont.TabIndex = 1;
             // 
+            // btnEntries
+            // 
+            btnEntries.AutoSize = false;
+            btnEntries.AutoToolTip = false;
+            btnEntries.BackColor = Color.FromArgb(224, 224, 224);
+            btnEntries.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            btnEntries.DropDownItems.AddRange(new ToolStripItem[] { btnInventory });
+            btnEntries.Font = new Font("Arial", 11F);
+            btnEntries.Image = (Image)resources.GetObject("btnEntries.Image");
+            btnEntries.ImageTransparentColor = Color.Magenta;
+            btnEntries.Margin = new Padding(15, 5, 0, 5);
+            btnEntries.Name = "btnEntries";
+            btnEntries.Size = new Size(115, 25);
+            btnEntries.Text = "Consulta";
+            btnEntries.DropDownItemClicked += btnEntries_DropDownItemClicked;
+            // 
             // btnInventory
             // 
-            btnInventory.AutoSize = false;
             btnInventory.BackColor = Color.Transparent;
             btnInventory.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            btnInventory.Font = new Font("Arial", 11F);
-            btnInventory.Image = (Image)resources.GetObject("btnInventory.Image");
-            btnInventory.ImageTransparentColor = Color.FromArgb(192, 255, 192);
-            btnInventory.Margin = new Padding(10, 5, 0, 5);
             btnInventory.Name = "btnInventory";
-            btnInventory.Padding = new Padding(1);
-            btnInventory.Size = new Size(115, 25);
+            btnInventory.Size = new Size(130, 22);
             btnInventory.Text = "Estoque";
             btnInventory.Click += BtnInventory_Click;
             // 
-            // toolStripSeparator1
+            // toolStripSeparator2
             // 
-            toolStripSeparator1.AutoSize = false;
-            toolStripSeparator1.BackColor = Color.Black;
-            toolStripSeparator1.ForeColor = Color.Black;
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(25, 30);
+            toolStripSeparator2.AutoSize = false;
+            toolStripSeparator2.BackColor = Color.Black;
+            toolStripSeparator2.ForeColor = Color.Black;
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(20, 30);
             // 
             // btnTransactions
             // 
             btnTransactions.AutoSize = false;
+            btnTransactions.AutoToolTip = false;
             btnTransactions.BackColor = Color.FromArgb(224, 224, 224);
             btnTransactions.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnTransactions.DropDownItems.AddRange(new ToolStripItem[] { btnActiveTrans, btnHistoryTrans });
@@ -134,7 +145,7 @@
             btnActiveTrans.BackColor = Color.Transparent;
             btnActiveTrans.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnActiveTrans.Name = "btnActiveTrans";
-            btnActiveTrans.Size = new Size(180, 22);
+            btnActiveTrans.Size = new Size(133, 22);
             btnActiveTrans.Text = "Ativas";
             btnActiveTrans.Click += btnActiveTrans_Click;
             // 
@@ -144,7 +155,7 @@
             btnHistoryTrans.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnHistoryTrans.ForeColor = SystemColors.ControlText;
             btnHistoryTrans.Name = "btnHistoryTrans";
-            btnHistoryTrans.Size = new Size(180, 22);
+            btnHistoryTrans.Size = new Size(133, 22);
             btnHistoryTrans.Text = "Histórico";
             btnHistoryTrans.Click += btnHistoryTrans_Click;
             // 
@@ -337,7 +348,7 @@
             editProduct.Location = new Point(15, 10);
             editProduct.Name = "editProduct";
             editProduct.Size = new Size(632, 264);
-            editProduct.TabIndex = 1;
+            editProduct.TabIndex = 2;
             editProduct.Visible = false;
             editProduct.VisibleChanged += editProduct_VisibleChanged;
             // 
@@ -521,8 +532,7 @@
         #endregion
 
         private ToolStrip tspCont;
-        private ToolStripButton btnInventory;
-        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem btnInventory;
         private ToolStripDropDownButton btnTransactions;
         private ToolStripMenuItem btnActiveTrans;
         private ToolStripMenuItem btnHistoryTrans;
@@ -530,7 +540,18 @@
         private ToolStripProgressBar pgbData;
         private System.Windows.Forms.Timer timerData;
         private DataGridView gridInv;
+        private OpenFileDialog openFile;
+        private ToolStripTextBox txtSearch;
+        private ToolStripButton btnDeleteProd;
+        private ToolStripButton btnUpdateProduct;
+        private ToolStripButton btnUpdateInv;
+        private ToolStripButton btnDeny;
+        private ToolStripButton btnApprove;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripDropDownButton btnEntries;
         private Panel editProduct;
+        private NumericUpDown numValue;
+        private Label label1;
         private Label label7;
         private TextBox txtDesc;
         private PictureBox imgProd;
@@ -541,14 +562,5 @@
         private TextBox txtProductName;
         private Label label12;
         private TextBox txtProdId;
-        private Label label1;
-        private NumericUpDown numValue;
-        private OpenFileDialog openFile;
-        private ToolStripTextBox txtSearch;
-        private ToolStripButton btnDeleteProd;
-        private ToolStripButton btnUpdateProduct;
-        private ToolStripButton btnUpdateInv;
-        private ToolStripButton btnDeny;
-        private ToolStripButton btnApprove;
     }
 }

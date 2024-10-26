@@ -10,16 +10,19 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using Project.Controls;
 using Org.BouncyCastle.Asn1.Pkcs;
+using Project.Forms.UserControls;
 
 namespace Project.Forms
 {
     public partial class frmMain : Form
     {
-        private string employeePosition;
+        private readonly string employeePosition;
+        private readonly string employeeID;
 
-        public frmMain(string employeePosition)
+        public frmMain(string employeePosition, string employeeID)
         {
             this.employeePosition = employeePosition;
+            this.employeeID = employeeID;
             InitializeComponent();
         }
 
@@ -50,7 +53,9 @@ namespace Project.Forms
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            if (employeePosition != null && employeePosition.ToLower().Equals("gerente"))
+            lblID.Text = employeeID.ToString();
+
+            if (!string.IsNullOrWhiteSpace(employeePosition) && employeePosition.Equals("1"))
             {
                 btnReg.Visible = true;
                 btnReg.Enabled = true;
@@ -63,7 +68,7 @@ namespace Project.Forms
         {
             DeleteActiveControl();
 
-            registerPanel? regPanel = new()
+            RegisterPanel? regPanel = new()
             {
                 Dock = DockStyle.Fill
             };
@@ -82,6 +87,30 @@ namespace Project.Forms
 
             pnlMain.Controls.Clear();
             pnlMain.Controls.Add(ctrlPanel);
+        }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Deseja realmente sair?", "Desconectando", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                this.Hide();
+                frmLogin frmLogin = new();
+                frmLogin.ShowDialog();
+                this.Close();
+            }
+        }
+
+        private void btnProfile_Click(object sender, EventArgs e)
+        {
+            DeleteActiveControl();
+
+            profilePanel? profilePanel = new()
+            {
+                Dock = DockStyle.Fill
+            };
+
+            pnlMain.Controls.Clear();
+            pnlMain.Controls.Add(profilePanel);
         }
     }
 }

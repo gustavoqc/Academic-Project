@@ -1,6 +1,6 @@
 ﻿namespace Project.Forms
 {
-    partial class registerPanel
+    partial class RegisterPanel
     {
         /// <summary> 
         /// Variável de designer necessária.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(registerPanel));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterPanel));
             pnlReg = new Panel();
             tspReg = new ToolStrip();
             btnEmployee = new ToolStripButton();
@@ -51,6 +51,7 @@
             label12 = new Label();
             txtProdId = new TextBox();
             pnlEmployee = new Panel();
+            btnAddPos = new Button();
             btnCopy = new Button();
             txtTempPsw = new TextBox();
             btnRegister = new Button();
@@ -80,8 +81,8 @@
             // 
             pnlReg.BackColor = Color.FromArgb(224, 224, 224);
             pnlReg.Controls.Add(tspReg);
-            pnlReg.Controls.Add(pnlProduct);
             pnlReg.Controls.Add(pnlEmployee);
+            pnlReg.Controls.Add(pnlProduct);
             pnlReg.Dock = DockStyle.Fill;
             pnlReg.Location = new Point(0, 0);
             pnlReg.Margin = new Padding(4);
@@ -158,6 +159,7 @@
             pnlProduct.Name = "pnlProduct";
             pnlProduct.Size = new Size(663, 283);
             pnlProduct.TabIndex = 12;
+            pnlProduct.Tag = "";
             // 
             // numValue
             // 
@@ -167,7 +169,7 @@
             numValue.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             numValue.Name = "numValue";
             numValue.Size = new Size(120, 26);
-            numValue.TabIndex = 20;
+            numValue.TabIndex = 2;
             numValue.TextAlign = HorizontalAlignment.Center;
             numValue.ThousandsSeparator = true;
             numValue.Enter += numValue_Enter;
@@ -192,7 +194,7 @@
             txtDesc.Name = "txtDesc";
             txtDesc.ScrollBars = ScrollBars.Vertical;
             txtDesc.Size = new Size(256, 95);
-            txtDesc.TabIndex = 4;
+            txtDesc.TabIndex = 5;
             // 
             // imgProd
             // 
@@ -226,7 +228,7 @@
             numQty.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             numQty.Name = "numQty";
             numQty.Size = new Size(71, 26);
-            numQty.TabIndex = 4;
+            numQty.TabIndex = 3;
             numQty.TextAlign = HorizontalAlignment.Center;
             // 
             // btnAddCateg
@@ -240,10 +242,11 @@
             btnAddCateg.Margin = new Padding(4);
             btnAddCateg.Name = "btnAddCateg";
             btnAddCateg.Size = new Size(15, 15);
-            btnAddCateg.TabIndex = 3;
+            btnAddCateg.TabIndex = 7;
+            btnAddCateg.Tag = "C";
             tooltip.SetToolTip(btnAddCateg, "Adicionar nova categoria");
             btnAddCateg.UseVisualStyleBackColor = true;
-            btnAddCateg.Click += btnAddCateg_Click;
+            btnAddCateg.Click += btnAddItem_Click;
             // 
             // btnRegisterP
             // 
@@ -259,7 +262,7 @@
             btnRegisterP.Margin = new Padding(6, 6, 0, 6);
             btnRegisterP.Name = "btnRegisterP";
             btnRegisterP.Size = new Size(161, 42);
-            btnRegisterP.TabIndex = 5;
+            btnRegisterP.TabIndex = 6;
             btnRegisterP.Tag = "P";
             btnRegisterP.Text = "Cadastrar";
             btnRegisterP.UseVisualStyleBackColor = false;
@@ -285,8 +288,7 @@
             cmbCateg.Name = "cmbCateg";
             cmbCateg.RightToLeft = RightToLeft.No;
             cmbCateg.Size = new Size(161, 26);
-            cmbCateg.Sorted = true;
-            cmbCateg.TabIndex = 2;
+            cmbCateg.TabIndex = 4;
             // 
             // label11
             // 
@@ -306,7 +308,7 @@
             txtProductName.Margin = new Padding(4);
             txtProductName.Name = "txtProductName";
             txtProductName.Size = new Size(302, 26);
-            txtProductName.TabIndex = 0;
+            txtProductName.TabIndex = 1;
             // 
             // label12
             // 
@@ -329,6 +331,7 @@
             // 
             // pnlEmployee
             // 
+            pnlEmployee.Controls.Add(btnAddPos);
             pnlEmployee.Controls.Add(btnCopy);
             pnlEmployee.Controls.Add(txtTempPsw);
             pnlEmployee.Controls.Add(btnRegister);
@@ -348,6 +351,23 @@
             pnlEmployee.Name = "pnlEmployee";
             pnlEmployee.Size = new Size(663, 283);
             pnlEmployee.TabIndex = 1;
+            // 
+            // btnAddPos
+            // 
+            btnAddPos.BackgroundImage = Properties.Resources.plus;
+            btnAddPos.BackgroundImageLayout = ImageLayout.Stretch;
+            btnAddPos.FlatAppearance.BorderSize = 0;
+            btnAddPos.FlatStyle = FlatStyle.Flat;
+            btnAddPos.ForeColor = SystemColors.ControlText;
+            btnAddPos.Location = new Point(605, 107);
+            btnAddPos.Margin = new Padding(4);
+            btnAddPos.Name = "btnAddPos";
+            btnAddPos.Size = new Size(15, 15);
+            btnAddPos.TabIndex = 13;
+            btnAddPos.Tag = "P";
+            tooltip.SetToolTip(btnAddPos, "Adicionar nova categoria");
+            btnAddPos.UseVisualStyleBackColor = true;
+            btnAddPos.Click += btnAddItem_Click;
             // 
             // btnCopy
             // 
@@ -482,18 +502,16 @@
             cmbPos.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPos.FlatStyle = FlatStyle.Flat;
             cmbPos.FormattingEnabled = true;
-            cmbPos.Items.AddRange(new object[] { "Caixa", "Estoquista", "Gerente", "Marketing", "Vendedor " });
-            cmbPos.Location = new Point(493, 100);
+            cmbPos.Location = new Point(493, 101);
             cmbPos.Margin = new Padding(4);
             cmbPos.Name = "cmbPos";
             cmbPos.Size = new Size(105, 26);
-            cmbPos.Sorted = true;
             cmbPos.TabIndex = 4;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(433, 103);
+            label2.Location = new Point(433, 104);
             label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
             label2.Size = new Size(52, 18);
@@ -520,7 +538,7 @@
             label1.TabIndex = 0;
             label1.Text = "Nome";
             // 
-            // registerPanel
+            // RegisterPanel
             // 
             AutoScaleDimensions = new SizeF(9F, 18F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -528,7 +546,7 @@
             Controls.Add(pnlReg);
             Font = new Font("Arial", 12F);
             Margin = new Padding(4);
-            Name = "registerPanel";
+            Name = "RegisterPanel";
             Size = new Size(662, 324);
             Load += userRegister_Load;
             pnlReg.ResumeLayout(false);
@@ -584,5 +602,6 @@
         private TextBox txtProdId;
         private OpenFileDialog openFile;
         private NumericUpDown numValue;
+        private Button btnAddPos;
     }
 }

@@ -53,7 +53,7 @@
             btnUpdate.Location = new Point(21, 93);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.Size = new Size(75, 30);
-            btnUpdate.TabIndex = 1;
+            btnUpdate.TabIndex = 2;
             btnUpdate.Text = "Salvar";
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Click += btnUpdate_Click;
@@ -76,7 +76,7 @@
             btnCancel.Location = new Point(115, 93);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(83, 30);
-            btnCancel.TabIndex = 2;
+            btnCancel.TabIndex = 3;
             btnCancel.Text = "Cancelar";
             btnCancel.UseVisualStyleBackColor = true;
             // 
