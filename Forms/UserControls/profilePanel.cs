@@ -49,27 +49,33 @@ namespace Project.Forms.UserControls
             txtName.Text = data.Rows[0][1].ToString();
             txtPos.Text = data.Rows[0][2].ToString();
             txtCPF.Text = data.Rows[0][3].ToString();
-            txtAdmDt.Text = data.Rows[0][4].ToString();
-            txtPsw.Text = data.Rows[0][5].ToString();
+            txtAdmDt.Text = data.Rows[0][4].ToString()![..10];
             txtEmail.Text = data.Rows[0][6].ToString();
+            txtPsw.Text = "Password";
             txtCPF.Mask = "000,000,000-00";
         }
 
         private void btnUpdateProfile_Click(object sender, EventArgs e)
         {
-            if(!string.IsNullOrEmpty(txtEmail.Text) && !string.IsNullOrEmpty(txtPsw.Text))
+            if (!string.IsNullOrEmpty(txtEmail.Text) && !string.IsNullOrEmpty(txtPsw.Text) && !string.IsNullOrEmpty(txtConfirmPsw.Text))
             {
+                if (!txtConfirmPsw.Text.Equals(txtPsw.Text))
+                {
+                    MessageBox.Show("As senhas não concidem!", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string employeeID = Parent!.Parent!.Controls.Find("lblID", true).First().Text;
                 DatabaseQuery db = new();
 
-                var queryParams = new UpdateQueryParams 
+                var queryParams = new UpdateQueryParams
                 {
                     TableName = "funcionario",
                     Columns = [
                         new() {Name = "email_func", Value = $"\"{txtEmail.Text.Replace("'", "\\'")}\""},
                         new() {Name = "senha_func", Value = $"MD5(\"{txtPsw.Text.Replace("'", "\\'")}\")"}
                     ],
-                    Where = new() { Column = "id_func", Value = employeeID}
+                    Where = new() { Column = "id_func", Value = employeeID }
                 };
 
                 var result = db.UpdateQuery(queryParams);
@@ -78,6 +84,31 @@ namespace Project.Forms.UserControls
             }
             else
                 MessageBox.Show("Os campos devem ser preenchidos corretamente!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void txtPsw_TextChanged(object sender, EventArgs e)
+        {
+            if (!txtPsw.Text.Equals("Password"))
+                txtConfirmPsw.Enabled = true;
+            else
+                txtConfirmPsw.Enabled = false;
+        }
+
+        private void txtPsw_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtPsw.Text))
+                txtPsw.Text = "Password";
+        }
+
+        private void txtConfirmPsw_EnabledChanged(object sender, EventArgs e)
+        {
+            if (!txtConfirmPsw.Enabled)
+                txtConfirmPsw.Text = "";
+        }
+
+        private void txtPsw_Enter(object sender, EventArgs e)
+        {
+            
         }
     }
 }

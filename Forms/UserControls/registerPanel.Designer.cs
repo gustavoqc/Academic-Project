@@ -36,6 +36,8 @@
             toolStripSeparator1 = new ToolStripSeparator();
             btnProducts = new ToolStripButton();
             pnlProduct = new Panel();
+            txtLinkUrl = new TextBox();
+            label9 = new Label();
             numValue = new NumericUpDown();
             label7 = new Label();
             txtDesc = new TextBox();
@@ -81,8 +83,8 @@
             // 
             pnlReg.BackColor = Color.FromArgb(224, 224, 224);
             pnlReg.Controls.Add(tspReg);
-            pnlReg.Controls.Add(pnlEmployee);
             pnlReg.Controls.Add(pnlProduct);
+            pnlReg.Controls.Add(pnlEmployee);
             pnlReg.Dock = DockStyle.Fill;
             pnlReg.Location = new Point(0, 0);
             pnlReg.Margin = new Padding(4);
@@ -140,6 +142,8 @@
             // 
             // pnlProduct
             // 
+            pnlProduct.Controls.Add(txtLinkUrl);
+            pnlProduct.Controls.Add(label9);
             pnlProduct.Controls.Add(numValue);
             pnlProduct.Controls.Add(label7);
             pnlProduct.Controls.Add(txtDesc);
@@ -161,15 +165,35 @@
             pnlProduct.TabIndex = 12;
             pnlProduct.Tag = "";
             // 
+            // txtLinkUrl
+            // 
+            txtLinkUrl.BackColor = Color.WhiteSmoke;
+            txtLinkUrl.BorderStyle = BorderStyle.FixedSingle;
+            txtLinkUrl.Location = new Point(84, 58);
+            txtLinkUrl.Margin = new Padding(4);
+            txtLinkUrl.Name = "txtLinkUrl";
+            txtLinkUrl.Size = new Size(176, 26);
+            txtLinkUrl.TabIndex = 2;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(35, 63);
+            label9.Margin = new Padding(4, 0, 4, 0);
+            label9.Name = "label9";
+            label9.Size = new Size(39, 18);
+            label9.TabIndex = 20;
+            label9.Text = "URL";
+            // 
             // numValue
             // 
             numValue.DecimalPlaces = 2;
             numValue.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
-            numValue.Location = new Point(84, 68);
+            numValue.Location = new Point(84, 102);
             numValue.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             numValue.Name = "numValue";
             numValue.Size = new Size(120, 26);
-            numValue.TabIndex = 2;
+            numValue.TabIndex = 3;
             numValue.TextAlign = HorizontalAlignment.Center;
             numValue.ThousandsSeparator = true;
             numValue.Enter += numValue_Enter;
@@ -178,7 +202,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(27, 204);
+            label7.Location = new Point(28, 216);
             label7.Margin = new Padding(4, 0, 4, 0);
             label7.Name = "label7";
             label7.Size = new Size(49, 18);
@@ -187,14 +211,15 @@
             // 
             // txtDesc
             // 
-            txtDesc.Location = new Point(84, 162);
+            txtDesc.Location = new Point(84, 189);
             txtDesc.Margin = new Padding(4);
-            txtDesc.MinimumSize = new Size(256, 95);
+            txtDesc.MaximumSize = new Size(256, 75);
+            txtDesc.MinimumSize = new Size(256, 75);
             txtDesc.Multiline = true;
             txtDesc.Name = "txtDesc";
             txtDesc.ScrollBars = ScrollBars.Vertical;
-            txtDesc.Size = new Size(256, 95);
-            txtDesc.TabIndex = 5;
+            txtDesc.Size = new Size(256, 75);
+            txtDesc.TabIndex = 6;
             // 
             // imgProd
             // 
@@ -213,7 +238,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(219, 71);
+            label8.Location = new Point(219, 105);
             label8.Margin = new Padding(4, 0, 4, 0);
             label8.Name = "label8";
             label8.Size = new Size(42, 18);
@@ -223,13 +248,14 @@
             // numQty
             // 
             numQty.BorderStyle = BorderStyle.FixedSingle;
-            numQty.Location = new Point(269, 68);
+            numQty.Location = new Point(269, 102);
             numQty.Margin = new Padding(4);
             numQty.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             numQty.Name = "numQty";
             numQty.Size = new Size(71, 26);
-            numQty.TabIndex = 3;
+            numQty.TabIndex = 4;
             numQty.TextAlign = HorizontalAlignment.Center;
+            numQty.Enter += numQty_Enter;
             // 
             // btnAddCateg
             // 
@@ -238,7 +264,7 @@
             btnAddCateg.FlatAppearance.BorderSize = 0;
             btnAddCateg.FlatStyle = FlatStyle.Flat;
             btnAddCateg.ForeColor = SystemColors.ControlText;
-            btnAddCateg.Location = new Point(253, 123);
+            btnAddCateg.Location = new Point(235, 151);
             btnAddCateg.Margin = new Padding(4);
             btnAddCateg.Name = "btnAddCateg";
             btnAddCateg.Size = new Size(15, 15);
@@ -262,7 +288,7 @@
             btnRegisterP.Margin = new Padding(6, 6, 0, 6);
             btnRegisterP.Name = "btnRegisterP";
             btnRegisterP.Size = new Size(161, 42);
-            btnRegisterP.TabIndex = 6;
+            btnRegisterP.TabIndex = 7;
             btnRegisterP.Tag = "P";
             btnRegisterP.Text = "Cadastrar";
             btnRegisterP.UseVisualStyleBackColor = false;
@@ -271,7 +297,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(32, 71);
+            label10.Location = new Point(32, 105);
             label10.Margin = new Padding(4, 0, 4, 0);
             label10.Name = "label10";
             label10.Size = new Size(44, 18);
@@ -283,17 +309,17 @@
             cmbCateg.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbCateg.FlatStyle = FlatStyle.Flat;
             cmbCateg.FormattingEnabled = true;
-            cmbCateg.Location = new Point(84, 118);
+            cmbCateg.Location = new Point(84, 146);
             cmbCateg.Margin = new Padding(4);
             cmbCateg.Name = "cmbCateg";
             cmbCateg.RightToLeft = RightToLeft.No;
-            cmbCateg.Size = new Size(161, 26);
-            cmbCateg.TabIndex = 4;
+            cmbCateg.Size = new Size(143, 26);
+            cmbCateg.TabIndex = 5;
             // 
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new Point(26, 121);
+            label11.Location = new Point(26, 149);
             label11.Margin = new Padding(4, 0, 4, 0);
             label11.Name = "label11";
             label11.Size = new Size(55, 18);
@@ -313,7 +339,7 @@
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new Point(26, 19);
+            label12.Location = new Point(27, 19);
             label12.Margin = new Padding(4, 0, 4, 0);
             label12.Name = "label12";
             label12.Size = new Size(50, 18);
@@ -603,5 +629,7 @@
         private OpenFileDialog openFile;
         private NumericUpDown numValue;
         private Button btnAddPos;
+        private TextBox txtLinkUrl;
+        private Label label9;
     }
 }

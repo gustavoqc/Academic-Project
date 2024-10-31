@@ -325,6 +325,7 @@
             gridInv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             gridInv.Size = new Size(632, 264);
             gridInv.TabIndex = 0;
+            gridInv.CellDoubleClick += gridInv_CellDoubleClick;
             gridInv.CellFormatting += GridInv_CellFormatting;
             gridInv.DataBindingComplete += gridInv_DataBindingComplete;
             gridInv.SelectionChanged += gridInv_SelectionChanged;

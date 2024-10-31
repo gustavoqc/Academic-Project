@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             pnlProfile = new Panel();
+            label8 = new Label();
+            txtConfirmPsw = new TextBox();
             txtCPF = new MaskedTextBox();
             label1 = new Label();
             txtAdmDt = new TextBox();
@@ -49,6 +51,8 @@
             // 
             // pnlProfile
             // 
+            pnlProfile.Controls.Add(label8);
+            pnlProfile.Controls.Add(txtConfirmPsw);
             pnlProfile.Controls.Add(txtCPF);
             pnlProfile.Controls.Add(label1);
             pnlProfile.Controls.Add(txtAdmDt);
@@ -70,10 +74,31 @@
             pnlProfile.Size = new Size(662, 324);
             pnlProfile.TabIndex = 0;
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(12, 222);
+            label8.MaximumSize = new Size(100, 0);
+            label8.Name = "label8";
+            label8.Size = new Size(98, 36);
+            label8.TabIndex = 20;
+            label8.Text = "Confirmação de Senha";
+            label8.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // txtConfirmPsw
+            // 
+            txtConfirmPsw.Enabled = false;
+            txtConfirmPsw.Location = new Point(116, 227);
+            txtConfirmPsw.Name = "txtConfirmPsw";
+            txtConfirmPsw.Size = new Size(233, 26);
+            txtConfirmPsw.TabIndex = 3;
+            txtConfirmPsw.UseSystemPasswordChar = true;
+            txtConfirmPsw.EnabledChanged += txtConfirmPsw_EnabledChanged;
+            // 
             // txtCPF
             // 
             txtCPF.Enabled = false;
-            txtCPF.Location = new Point(89, 31);
+            txtCPF.Location = new Point(116, 31);
             txtCPF.Name = "txtCPF";
             txtCPF.Size = new Size(166, 26);
             txtCPF.TabIndex = 18;
@@ -82,7 +107,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(391, 73);
+            label1.Location = new Point(408, 75);
             label1.MaximumSize = new Size(80, 0);
             label1.Name = "label1";
             label1.Size = new Size(79, 36);
@@ -93,7 +118,7 @@
             // txtAdmDt
             // 
             txtAdmDt.Enabled = false;
-            txtAdmDt.Location = new Point(476, 79);
+            txtAdmDt.Location = new Point(504, 78);
             txtAdmDt.Name = "txtAdmDt";
             txtAdmDt.Size = new Size(116, 26);
             txtAdmDt.TabIndex = 16;
@@ -102,7 +127,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(419, 40);
+            label5.Location = new Point(432, 33);
             label5.Name = "label5";
             label5.Size = new Size(23, 18);
             label5.TabIndex = 15;
@@ -111,7 +136,7 @@
             // txtId
             // 
             txtId.Enabled = false;
-            txtId.Location = new Point(476, 37);
+            txtId.Location = new Point(504, 30);
             txtId.Name = "txtId";
             txtId.Size = new Size(116, 26);
             txtId.TabIndex = 14;
@@ -127,12 +152,12 @@
             btnUpdateProfile.FlatStyle = FlatStyle.Flat;
             btnUpdateProfile.Font = new Font("Arial", 10F, FontStyle.Bold);
             btnUpdateProfile.ForeColor = Color.Black;
-            btnUpdateProfile.Location = new Point(431, 229);
+            btnUpdateProfile.Location = new Point(459, 225);
             btnUpdateProfile.Margin = new Padding(6, 6, 0, 6);
             btnUpdateProfile.Name = "btnUpdateProfile";
             btnUpdateProfile.Size = new Size(161, 42);
-            btnUpdateProfile.TabIndex = 3;
-            btnUpdateProfile.Tag = "E";
+            btnUpdateProfile.TabIndex = 4;
+            btnUpdateProfile.Tag = "";
             btnUpdateProfile.Text = "Atualizar Cadastro";
             btnUpdateProfile.UseVisualStyleBackColor = false;
             btnUpdateProfile.Click += btnUpdateProfile_Click;
@@ -140,7 +165,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(30, 240);
+            label7.Location = new Point(30, 180);
             label7.Name = "label7";
             label7.Size = new Size(53, 18);
             label7.TabIndex = 13;
@@ -148,16 +173,18 @@
             // 
             // txtPsw
             // 
-            txtPsw.Location = new Point(89, 237);
+            txtPsw.Location = new Point(116, 177);
             txtPsw.Name = "txtPsw";
             txtPsw.Size = new Size(233, 26);
             txtPsw.TabIndex = 2;
             txtPsw.UseSystemPasswordChar = true;
+            txtPsw.TextChanged += txtPsw_TextChanged;
+            txtPsw.Leave += txtPsw_Leave;
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(34, 81);
+            label6.Location = new Point(422, 136);
             label6.Name = "label6";
             label6.Size = new Size(52, 18);
             label6.TabIndex = 11;
@@ -166,16 +193,16 @@
             // txtPos
             // 
             txtPos.Enabled = false;
-            txtPos.Location = new Point(89, 78);
+            txtPos.Location = new Point(504, 133);
             txtPos.Name = "txtPos";
-            txtPos.Size = new Size(166, 26);
+            txtPos.Size = new Size(116, 26);
             txtPos.TabIndex = 10;
             txtPos.TextAlign = HorizontalAlignment.Center;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(30, 186);
+            label4.Location = new Point(30, 131);
             label4.Name = "label4";
             label4.Size = new Size(53, 18);
             label4.TabIndex = 7;
@@ -183,7 +210,7 @@
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(89, 183);
+            txtEmail.Location = new Point(116, 128);
             txtEmail.Name = "txtEmail";
             txtEmail.Size = new Size(233, 26);
             txtEmail.TabIndex = 1;
@@ -191,7 +218,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(36, 133);
+            label3.Location = new Point(36, 81);
             label3.Name = "label3";
             label3.Size = new Size(50, 18);
             label3.TabIndex = 5;
@@ -200,7 +227,7 @@
             // txtName
             // 
             txtName.Enabled = false;
-            txtName.Location = new Point(89, 130);
+            txtName.Location = new Point(116, 78);
             txtName.Name = "txtName";
             txtName.Size = new Size(233, 26);
             txtName.TabIndex = 4;
@@ -248,5 +275,7 @@
         private Label label5;
         private TextBox txtId;
         private MaskedTextBox txtCPF;
+        private Label label8;
+        private TextBox txtConfirmPsw;
     }
 }

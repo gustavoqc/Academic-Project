@@ -149,15 +149,15 @@ namespace Project.Forms
             }
         }
 
-        private int InsertProducts(string name, int category, string value, string amount, string desc, string img_path)
+        private int InsertProducts(string name, int category, string value, string amount, string desc, string img_path, string link_url)
         {
             DatabaseQuery db = new();
 
             var queryParams = new InsertQueryParams
             {
                 TableName = "produto",
-                Columns = ["nome_prod", "categoria_prod", "valor_prod", "estoque_prod", "descricao_prod", "imagem_prod_path"],
-                Values = [$"\"{ToTitleCase(name)}\"", $"{category}", value.Replace(',', '.'), amount, $"\"{desc}\"", $"\"{img_path}\""]
+                Columns = ["nome_prod", "categoria_prod", "valor_prod", "estoque_prod", "descricao_prod", "imagem_prod_path", "link_url"],
+                Values = [$"\"{ToTitleCase(name)}\"", $"{category}", value.Replace(',', '.'), amount, $"\"{desc}\"", $"\"{img_path}\"", $"\"{link_url}\""]
             };
 
             if (db.InsertQuery(queryParams) > 0)
@@ -247,6 +247,7 @@ namespace Project.Forms
             var validFields = FieldValidation.ValidateControls(pnlProduct);
             var errorMessage = FieldValidation.SetMessage(validFields);
 
+            // Insert employee
             if (button.Tag is string tag && tag.Equals("E"))
             {
                 validFields = FieldValidation.ValidateControls(pnlEmployee);
@@ -257,12 +258,13 @@ namespace Project.Forms
                     MessageBox.Show($"Todos os campos devem ser preenchidos corretamente! \n\n{errorMessage}", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                
+
                 InsertEmployee(txtId.Text, txtName.Text.Replace("'", "\\'"), txtEmail.Text.Replace("'", "\\'"), dtAdDate.Value, (int)cmbPos.SelectedValue!, txtTempPsw.Text);
                 btnEmployee_Click(sender, e);
                 return;
             }
 
+            // Insert Product
             if (validFields.Any(key => key.Key > 0))
             {
                 MessageBox.Show($"Todos os campos devem ser preenchidos corretamente! \n\n{errorMessage}", "Erro no cadastro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -282,9 +284,9 @@ namespace Project.Forms
             }
 
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
-            string folderPath = Path.Combine(documentsPath ?? "C://", "Products_Images");
+            string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
             string savePath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
-            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "''"), $"Product_{txtProdId.Text.Replace("'", "''")}.png");
+            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "\\'"), $"/Images/Product_{txtProdId.Text.Replace("'", "\\'")}.png", txtLinkUrl.Text.Replace("'", "\\'"));
 
             if (rows == 1)
             {
@@ -432,6 +434,11 @@ namespace Project.Forms
         private void numValue_Enter(object sender, EventArgs e)
         {
             numValue.Select(0, 6);
+        }
+
+        private void numQty_Enter(object sender, EventArgs e)
+        {
+            numQty.Select(0, 3);
         }
     }
 }

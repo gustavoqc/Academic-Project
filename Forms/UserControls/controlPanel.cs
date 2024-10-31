@@ -1,8 +1,10 @@
 ﻿using System.Data;
 using System.Windows.Forms;
+using Google.Protobuf.WellKnownTypes;
 using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Relational;
 using Project.Forms;
+using Project.Forms.Popups;
 using Project.Services;
 using Project.Services.Database;
 
@@ -163,7 +165,7 @@ namespace Project.Controls
                     ],
 
                     Where = $"status_transacao {transStatus} 0",
-                    OrderBy = "dt_transacao ASC, transacao_valida Desc"
+                    OrderBy = "transacao_valida DESC, dt_transacao DESC"
                 };
 
                 return db.SelectQuery(queryParams) ?? null;
@@ -337,7 +339,7 @@ namespace Project.Controls
             LoadCategories();
             HideActionButtons();
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
-            string folderPath = Path.Combine(documentsPath ?? "C://", "Products_Images");
+            string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
             var orderedTextBoxes = editProduct.Controls.OfType<TextBox>().OrderBy(control => control.Top).ToList();
             string imgPath;
             int i = 0;
@@ -372,24 +374,49 @@ namespace Project.Controls
         private void btnApprove_Click(object sender, EventArgs e)
         {
             DatabaseQuery db = new();
+            string desc = gridInv.SelectedCells[5].Value.ToString() ?? "Error";
+            var items = desc.Split(["|-|"], StringSplitOptions.TrimEntries);
+            List<(string, int)> products = [];
+            string message = "";
 
-            var queryParams = new UpdateQueryParams
+            foreach (var item in items)
             {
-                TableName = "transacao",
-                Columns =
-                [
-                    new() { Name = "status_transacao", Value = "1" },
-                    new() { Name = "transacao_valida", Value = "1" }
-                ],
-                Where = new() { Column = "id_transacao", Value = gridInv.SelectedCells[0].Value.ToString() ?? "" }
-            };
+                var data = item.Split(["-"], StringSplitOptions.RemoveEmptyEntries);
+                int itemId = Convert.ToInt32(GetText(data[0]));
+                int itemQty = Convert.ToInt32(GetText(data[2]));
+                var currentInv = HasInventory(itemId, itemQty);
 
-            db.UpdateQuery(queryParams);
+                if (!Convert.ToBoolean(currentInv[0]))
+                {
+                    message += $"• {currentInv[2]} ({currentInv[3]}/{itemQty}) \n";
+                    continue;
+                }
 
+                products.Add((currentInv[1], Convert.ToInt32(currentInv[3]) - itemQty));
+            }
+
+            if (!message.Equals(""))
+            {
+                MessageBox.Show($"Não foi possível validar a transação. Os seguintes itens não possuem quantidade suficiente em estoque:\n\n{message}", "Erro durante validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            foreach (var item in products)
+            {
+                var queryParams = new UpdateQueryParams
+                {
+                    TableName = "produto",
+                    Columns = [new() { Name = "estoque_prod", Value = $"{item.Item2}" }],
+                    Where = new() { Column = "id_prod", Value = $"{item.Item1}" }
+                };
+
+                db.UpdateQuery(queryParams);
+            }
+
+            ValidateTransaction();
             gridInv.Tag = "TH";
             HideActionButtons();
             LoadData("TH");
-
         }
 
         private void btnDeny_Click(object sender, EventArgs e)
@@ -426,7 +453,7 @@ namespace Project.Controls
             }
 
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
-            string folderPath = Path.Combine(documentsPath ?? "C://", "Products_Images");
+            string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
             string savePath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
             DatabaseQuery db = new();
 
@@ -601,6 +628,115 @@ namespace Project.Controls
             HideActionButtons();
             txtSearch.Text = "";
             txtSearch_Leave(sender, e);
+        }
+
+        private void gridInv_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (gridInv.Tag!.Equals("TH"))
+            {
+                string descText = gridInv.Rows[e.RowIndex].Cells["Descrição"].Value.ToString()!;
+                decimal totalValue = Convert.ToDecimal(gridInv.Rows[e.RowIndex].Cells["Valor"].Value);
+                string paymentMethod = gridInv.Rows[e.RowIndex].Cells["Pagamento"].Value.ToString()!;
+                var items = descText.Split(["|-|"], StringSplitOptions.TrimEntries);
+                List<Product> receiptContent = [];
+
+                foreach (var item in items)
+                {
+                    var data = item.Split(["-"], StringSplitOptions.RemoveEmptyEntries);
+                    
+                    Product product = new()
+                    {
+                        ID = GetText(data[0]),
+                        Desc = GetText(data[1]),
+                        Qty = Convert.ToInt32(GetText(data[2])),
+                        ProductValue = GetProductValue(GetText(data[0]))
+                    };
+
+                    receiptContent.Add(product);
+                }
+
+                frmReceipt frmReceipt = new(receiptContent, totalValue, items.Length, paymentMethod);
+                frmReceipt.ShowDialog();
+            }
+        }
+
+        decimal GetProductValue(string productID)
+        {
+            decimal value = 0;
+
+            DatabaseQuery db = new();
+            
+            var queryParams = new SelectQueryParams
+            {
+                TableName = "produto",
+                Columns = [ new() {Name = "valor_prod"} ],
+                Where = $"id_prod = {productID}"
+            };
+
+            var result = db.SelectQuery(queryParams);
+            
+            if (result != null && result.Rows.Count > 0)
+                value = Convert.ToDecimal(result.Rows[0][0]);
+            else
+                value = 0;
+
+            return value;
+        }
+
+        string GetText(string input)
+        {
+            return input[(input.IndexOf(':') + 1)..].Trim();
+        }
+
+        void ValidateTransaction()
+        {
+            DatabaseQuery db = new();
+
+            var queryParams = new UpdateQueryParams
+            {
+                TableName = "transacao",
+                Columns =
+                [
+                    new() { Name = "status_transacao", Value = "1" },
+                    new() { Name = "transacao_valida", Value = "1" }
+                ],
+                Where = new() { Column = "id_transacao", Value = gridInv.SelectedCells[0].Value.ToString() ?? "" }
+            };
+
+            db.UpdateQuery(queryParams);
+        }
+
+        List<string> HasInventory(int itemId, int itemQty)
+        {
+            DatabaseQuery db = new();
+
+            var queryParams = new SelectQueryParams
+            {
+                TableName = "produto",
+                Columns =
+                [
+                    new() { Name = "id_prod"},
+                    new() { Name = $"IF(estoque_prod >= {itemQty}, TRUE, FALSE)"},
+                    new() { Name = "estoque_prod" },
+                    new() { Name = "nome_prod" }
+                ],
+                Where = $"id_prod = {itemId}"
+            };
+
+            var result = db.SelectQuery(queryParams);
+            int id = Convert.ToInt32(result!.Rows[0][0]);
+            int inventory = Convert.ToInt32(result!.Rows[0][2]);
+            string product = result.Rows[0][3].ToString()!;
+
+            if (result.Rows.Count > 0)
+            {
+                if (Convert.ToBoolean(result.Rows[0][1]))
+                {
+                    return ["true", $"{id}", $"{product}", $"{inventory}"];
+                }
+            } 
+
+            return ["false", $"{id}", $"{product}", $"{inventory}"];
         }
     }
 }
