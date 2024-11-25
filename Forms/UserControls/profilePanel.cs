@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Project.Forms.UserControls
 {
@@ -81,6 +82,10 @@ namespace Project.Forms.UserControls
                 var result = db.UpdateQuery(queryParams);
                 if (result > 0)
                     MessageBox.Show("Cadastro atualizado com sucesso!!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                txtPsw.Text = "";
+                txtConfirmPsw.Text = "";
+                txtPsw_Leave(sender, e);
             }
             else
                 MessageBox.Show("Os campos devem ser preenchidos corretamente!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -108,7 +113,9 @@ namespace Project.Forms.UserControls
 
         private void txtPsw_Enter(object sender, EventArgs e)
         {
-            
+            BeginInvoke((MethodInvoker)delegate {
+                txtPsw.SelectAll();
+            });
         }
     }
 }

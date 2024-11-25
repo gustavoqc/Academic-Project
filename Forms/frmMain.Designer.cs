@@ -1,6 +1,6 @@
 ﻿namespace Project.Forms
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -184,7 +184,7 @@
             Name = "frmMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Painel de Controle";
-            Load += frmMain_Load;
+            Load += FrmMain_Load;
             pnlControls.ResumeLayout(false);
             pnlControls.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);

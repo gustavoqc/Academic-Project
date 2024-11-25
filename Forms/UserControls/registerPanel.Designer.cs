@@ -116,7 +116,7 @@
             btnEmployee.Padding = new Padding(1);
             btnEmployee.Size = new Size(135, 25);
             btnEmployee.Text = "Novo Funcionário";
-            btnEmployee.Click += btnEmployee_Click;
+            btnEmployee.Click += BtnEmployee_Click;
             // 
             // toolStripSeparator1
             // 
@@ -190,7 +190,7 @@
             numValue.DecimalPlaces = 2;
             numValue.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
             numValue.Location = new Point(84, 102);
-            numValue.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
+            numValue.Maximum = new decimal(new int[] { 99999, 0, 0, 131072 });
             numValue.Name = "numValue";
             numValue.Size = new Size(120, 26);
             numValue.TabIndex = 3;

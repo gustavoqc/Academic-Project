@@ -80,7 +80,7 @@
             btnPrint.Size = new Size(30, 30);
             btnPrint.Text = "&Imprimir";
             btnPrint.TextImageRelation = TextImageRelation.TextAboveImage;
-            btnPrint.Click += btnPrint_Click;
+            btnPrint.Click += BtnPrint_Click;
             // 
             // pnlReceipt
             // 
@@ -123,7 +123,7 @@
             listReceipt.TabIndex = 3;
             listReceipt.UseCompatibleStateImageBehavior = false;
             listReceipt.View = View.Details;
-            listReceipt.ItemSelectionChanged += listReceipt_ItemSelectionChanged;
+            listReceipt.ItemSelectionChanged += ListReceipt_ItemSelectionChanged;
             // 
             // itemCount
             // 
@@ -199,11 +199,11 @@
             btnClose.Size = new Size(30, 30);
             btnClose.Text = "&Close";
             btnClose.TextImageRelation = TextImageRelation.TextAboveImage;
-            btnClose.Click += btnClose_Click;
+            btnClose.Click += BtnClose_Click;
             // 
             // docReceipt
             // 
-            docReceipt.PrintPage += printDocument1_PrintPage;
+            docReceipt.PrintPage += DocReceipt_PrintPage;
             // 
             // dialPrint
             // 
@@ -224,7 +224,7 @@
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "frmReceipt";
-            Load += frmReceipt_Load;
+            Load += FrmReceipt_Load;
             tspActions.ResumeLayout(false);
             tspActions.PerformLayout();
             pnlReceipt.ResumeLayout(false);
@@ -243,7 +243,6 @@
         private ToolStripButton btnPrint;
         private ToolStrip tspFormActions;
         private ToolStripButton btnClose;
-        private RichTextBox txtReceipt;
         private System.Drawing.Printing.PrintDocument docReceipt;
         private PrintDialog dialPrint;
         private Panel pnlActions;

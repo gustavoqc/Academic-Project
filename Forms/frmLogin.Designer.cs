@@ -1,6 +1,6 @@
 ﻿namespace Project
 {
-    partial class frmLogin
+    partial class FrmLogin
     {
         /// <summary>
         ///  Required designer variable.
@@ -63,7 +63,7 @@
             txtId.TabIndex = 0;
             txtId.TextAlign = HorizontalAlignment.Center;
             txtId.WordWrap = false;
-            txtId.KeyPress += txtId_KeyPress;
+            txtId.KeyPress += TxtId_KeyPress;
             // 
             // btnLogin
             // 
@@ -80,7 +80,7 @@
             btnLogin.TabIndex = 2;
             btnLogin.Text = "LOGIN";
             btnLogin.UseVisualStyleBackColor = false;
-            btnLogin.Click += btnLogin_Click;
+            btnLogin.Click += BtnLogin_Click;
             // 
             // label2
             // 

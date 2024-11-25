@@ -31,6 +31,7 @@ namespace Project.Services.Database
         public string Where { get; set; } = "";
         public string OrderBy { get; set; } = "";
         public string[] InnerJoin { get; set; } = [];
+        public string[] LeftJoin { get; set; } = [];
     }
 
     internal class InsertQueryParams

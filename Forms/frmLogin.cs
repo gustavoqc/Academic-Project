@@ -4,14 +4,14 @@ using Project.Services.Database;
 
 namespace Project
 {
-    public partial class frmLogin : Form
+    public partial class FrmLogin : Form
     {
-        public frmLogin()
+        public FrmLogin()
         {
             InitializeComponent();
         }
 
-        private void txtId_KeyPress(object sender, KeyPressEventArgs e)
+        private void TxtId_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
@@ -19,7 +19,7 @@ namespace Project
             }
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void BtnLogin_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtId.Text) || string.IsNullOrEmpty(txtPsw.Text))
             {
@@ -44,7 +44,7 @@ namespace Project
             }
 
             this.Hide();
-            frmMain frmMain = new(result.Rows[0][2].ToString()!, result.Rows[0][0].ToString()!);
+            FrmMain frmMain = new(result.Rows[0][2].ToString()!, result.Rows[0][0].ToString()!);
             frmMain.ShowDialog();
             this.Close();
         }

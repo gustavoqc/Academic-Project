@@ -34,6 +34,14 @@ namespace Project.Services.Database
                 }
             }
 
+            if (queryParams.LeftJoin != null && queryParams.LeftJoin.Length > 0)
+            {
+                foreach (var condition in queryParams.LeftJoin)
+                {
+                    query += $" LEFT JOIN {condition}";
+                }
+            }
+
             if (!string.IsNullOrEmpty(queryParams.Where))
             {
                 query += $" WHERE {queryParams.Where}";

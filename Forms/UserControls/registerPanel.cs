@@ -89,7 +89,7 @@ namespace Project.Forms
             cmbPos.ValueMember = "id_cargo";
         }
 
-        private bool ProductExists(string productName)
+        private static bool ProductExists(string productName)
         {
             DatabaseQuery db = new();
 
@@ -227,7 +227,7 @@ namespace Project.Forms
             return formatedText.ToTitleCase(text.ToLowerInvariant());
         }
 
-        private void btnEmployee_Click(object sender, EventArgs e)
+        private void BtnEmployee_Click(object sender, EventArgs e)
         {
             pnlEmployee.BringToFront();
             pnlEmployee.Enabled = true;
@@ -260,7 +260,7 @@ namespace Project.Forms
                 }
 
                 InsertEmployee(txtId.Text, txtName.Text.Replace("'", "\\'"), txtEmail.Text.Replace("'", "\\'"), dtAdDate.Value, (int)cmbPos.SelectedValue!, txtTempPsw.Text);
-                btnEmployee_Click(sender, e);
+                BtnEmployee_Click(sender, e);
                 return;
             }
 
@@ -285,8 +285,8 @@ namespace Project.Forms
 
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
             string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
-            string savePath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
-            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "\\'"), $"/Images/Product_{txtProdId.Text.Replace("'", "\\'")}.png", txtLinkUrl.Text.Replace("'", "\\'"));
+            string savePath = Path.Combine(folderPath, $"{txtProductName.Text.Replace(" ", "-")}.webp");
+            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "\\'"), $"\\\\imagens\\\\{txtProductName.Text.Replace("'", "\\'").Replace(" ", "-")}.webp", txtLinkUrl.Text.Replace("'", "\\'"));
 
             if (rows == 1)
             {
@@ -406,7 +406,7 @@ namespace Project.Forms
 
         private void userRegister_Load(object sender, EventArgs e)
         {
-            btnEmployee_Click(sender, e);
+            BtnEmployee_Click(sender, e);
         }
 
         private void btnCopy_Click(object sender, EventArgs e)
@@ -433,12 +433,16 @@ namespace Project.Forms
 
         private void numValue_Enter(object sender, EventArgs e)
         {
-            numValue.Select(0, 6);
+            BeginInvoke((MethodInvoker)delegate {
+                numValue.Select(0, 6);
+            });
         }
 
         private void numQty_Enter(object sender, EventArgs e)
         {
-            numQty.Select(0, 3);
+            BeginInvoke((MethodInvoker)delegate {
+                numQty.Select(0, 3);
+            });
         }
     }
 }

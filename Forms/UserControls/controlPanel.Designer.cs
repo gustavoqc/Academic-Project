@@ -52,7 +52,6 @@
             btnDeny = new ToolStripButton();
             btnApprove = new ToolStripButton();
             pnlProduct = new Panel();
-            gridInv = new DataGridView();
             editProduct = new Panel();
             numValue = new NumericUpDown();
             label1 = new Label();
@@ -66,14 +65,15 @@
             txtProductName = new TextBox();
             label12 = new Label();
             txtProdId = new TextBox();
+            gridInv = new DataGridView();
             timerData = new System.Windows.Forms.Timer(components);
             openFile = new OpenFileDialog();
             tspCont.SuspendLayout();
             pnlProduct.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)gridInv).BeginInit();
             editProduct.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numValue).BeginInit();
             ((System.ComponentModel.ISupportInitialize)imgProd).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gridInv).BeginInit();
             SuspendLayout();
             // 
             // tspCont
@@ -147,7 +147,7 @@
             btnActiveTrans.Name = "btnActiveTrans";
             btnActiveTrans.Size = new Size(133, 22);
             btnActiveTrans.Text = "Ativas";
-            btnActiveTrans.Click += btnActiveTrans_Click;
+            btnActiveTrans.Click += BtnActiveTrans_Click;
             // 
             // btnHistoryTrans
             // 
@@ -157,7 +157,7 @@
             btnHistoryTrans.Name = "btnHistoryTrans";
             btnHistoryTrans.Size = new Size(133, 22);
             btnHistoryTrans.Text = "Histórico";
-            btnHistoryTrans.Click += btnHistoryTrans_Click;
+            btnHistoryTrans.Click += BtnHistoryTrans_Click;
             // 
             // pgbData
             // 
@@ -183,9 +183,9 @@
             txtSearch.Overflow = ToolStripItemOverflow.Never;
             txtSearch.Size = new Size(155, 35);
             txtSearch.Text = "Buscar registro...";
-            txtSearch.Enter += txtSearch_Enter;
-            txtSearch.Leave += txtSearch_Leave;
-            txtSearch.TextChanged += txtSearch_TextChanged;
+            txtSearch.Enter += TxtSearch_Enter;
+            txtSearch.Leave += TxtSearch_Leave;
+            txtSearch.TextChanged += TxtSearch_TextChanged;
             // 
             // btnDeleteProd
             // 
@@ -204,7 +204,7 @@
             btnDeleteProd.TextImageRelation = TextImageRelation.TextBeforeImage;
             btnDeleteProd.ToolTipText = "Excluir Produto";
             btnDeleteProd.Visible = false;
-            btnDeleteProd.Click += btnDeleteProd_Click;
+            btnDeleteProd.Click += BtnDeleteProd_Click;
             // 
             // btnUpdateProduct
             // 
@@ -220,7 +220,7 @@
             btnUpdateProduct.TextImageRelation = TextImageRelation.TextAboveImage;
             btnUpdateProduct.ToolTipText = "Atualizar Produto Selecionado";
             btnUpdateProduct.Visible = false;
-            btnUpdateProduct.Click += btnUpdateProduct_Click;
+            btnUpdateProduct.Click += BtnUpdateProduct_Click;
             // 
             // btnUpdateInv
             // 
@@ -237,7 +237,7 @@
             btnUpdateInv.TextImageRelation = TextImageRelation.TextAboveImage;
             btnUpdateInv.ToolTipText = "Atualizar Estoque Selecionado";
             btnUpdateInv.Visible = false;
-            btnUpdateInv.Click += btnUpdateInv_Click;
+            btnUpdateInv.Click += BtnUpdateInv_Click;
             // 
             // btnDeny
             // 
@@ -254,7 +254,7 @@
             btnDeny.TextImageRelation = TextImageRelation.TextAboveImage;
             btnDeny.ToolTipText = "Invalidar Transação";
             btnDeny.Visible = false;
-            btnDeny.Click += btnDeny_Click;
+            btnDeny.Click += BtnDeny_Click;
             // 
             // btnApprove
             // 
@@ -271,13 +271,13 @@
             btnApprove.TextImageRelation = TextImageRelation.TextAboveImage;
             btnApprove.ToolTipText = "Validar Transação";
             btnApprove.Visible = false;
-            btnApprove.Click += btnApprove_Click;
+            btnApprove.Click += BtnApprove_Click;
             // 
             // pnlProduct
             // 
             pnlProduct.BackColor = Color.FromArgb(224, 224, 224);
-            pnlProduct.Controls.Add(gridInv);
             pnlProduct.Controls.Add(editProduct);
+            pnlProduct.Controls.Add(gridInv);
             pnlProduct.Dock = DockStyle.Fill;
             pnlProduct.Location = new Point(0, 35);
             pnlProduct.Margin = new Padding(5);
@@ -285,50 +285,6 @@
             pnlProduct.Padding = new Padding(15, 10, 15, 15);
             pnlProduct.Size = new Size(662, 289);
             pnlProduct.TabIndex = 13;
-            // 
-            // gridInv
-            // 
-            gridInv.AllowUserToAddRows = false;
-            gridInv.AllowUserToDeleteRows = false;
-            gridInv.AllowUserToResizeColumns = false;
-            gridInv.AllowUserToResizeRows = false;
-            gridInv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            gridInv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            gridInv.BackgroundColor = Color.FromArgb(224, 224, 224);
-            gridInv.BorderStyle = BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = Color.LightGray;
-            dataGridViewCellStyle1.Font = new Font("Arial", 12F);
-            dataGridViewCellStyle1.ForeColor = Color.Black;
-            dataGridViewCellStyle1.SelectionBackColor = Color.Transparent;
-            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
-            gridInv.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            gridInv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = Color.White;
-            dataGridViewCellStyle2.Font = new Font("Arial", 12F);
-            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = SystemColors.GradientInactiveCaption;
-            dataGridViewCellStyle2.SelectionForeColor = SystemColors.ControlText;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
-            gridInv.DefaultCellStyle = dataGridViewCellStyle2;
-            gridInv.Dock = DockStyle.Fill;
-            gridInv.EnableHeadersVisualStyles = false;
-            gridInv.GridColor = Color.Black;
-            gridInv.Location = new Point(15, 10);
-            gridInv.MultiSelect = false;
-            gridInv.Name = "gridInv";
-            gridInv.ReadOnly = true;
-            gridInv.RowHeadersVisible = false;
-            gridInv.ScrollBars = ScrollBars.Vertical;
-            gridInv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gridInv.Size = new Size(632, 264);
-            gridInv.TabIndex = 0;
-            gridInv.CellDoubleClick += gridInv_CellDoubleClick;
-            gridInv.CellFormatting += GridInv_CellFormatting;
-            gridInv.DataBindingComplete += gridInv_DataBindingComplete;
-            gridInv.SelectionChanged += gridInv_SelectionChanged;
             // 
             // editProduct
             // 
@@ -351,7 +307,7 @@
             editProduct.Size = new Size(632, 264);
             editProduct.TabIndex = 2;
             editProduct.Visible = false;
-            editProduct.VisibleChanged += editProduct_VisibleChanged;
+            editProduct.VisibleChanged += EditProduct_VisibleChanged;
             // 
             // numValue
             // 
@@ -364,7 +320,8 @@
             numValue.TabIndex = 1;
             numValue.TextAlign = HorizontalAlignment.Center;
             numValue.ThousandsSeparator = true;
-            numValue.KeyPress += numValue_KeyPress;
+            numValue.Enter += numValue_Enter;
+            numValue.KeyPress += NumValue_KeyPress;
             // 
             // label1
             // 
@@ -412,7 +369,7 @@
             imgProd.SizeMode = PictureBoxSizeMode.StretchImage;
             imgProd.TabIndex = 31;
             imgProd.TabStop = false;
-            imgProd.Click += imgProd_Click;
+            imgProd.Click += ImgProd_Click;
             // 
             // btnEditProduct
             // 
@@ -432,7 +389,7 @@
             btnEditProduct.Tag = "";
             btnEditProduct.Text = "Salvar";
             btnEditProduct.UseVisualStyleBackColor = false;
-            btnEditProduct.Click += btnEditProduct_Click;
+            btnEditProduct.Click += BtnEditProduct_Click;
             // 
             // label10
             // 
@@ -456,7 +413,6 @@
             cmbCateg.Name = "cmbCateg";
             cmbCateg.RightToLeft = RightToLeft.No;
             cmbCateg.Size = new Size(120, 26);
-            cmbCateg.Sorted = true;
             cmbCateg.TabIndex = 2;
             // 
             // label11
@@ -501,6 +457,50 @@
             txtProdId.Size = new Size(91, 26);
             txtProdId.TabIndex = 1;
             // 
+            // gridInv
+            // 
+            gridInv.AllowUserToAddRows = false;
+            gridInv.AllowUserToDeleteRows = false;
+            gridInv.AllowUserToResizeColumns = false;
+            gridInv.AllowUserToResizeRows = false;
+            gridInv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            gridInv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            gridInv.BackgroundColor = Color.FromArgb(224, 224, 224);
+            gridInv.BorderStyle = BorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = Color.LightGray;
+            dataGridViewCellStyle1.Font = new Font("Arial", 12F);
+            dataGridViewCellStyle1.ForeColor = Color.Black;
+            dataGridViewCellStyle1.SelectionBackColor = Color.Transparent;
+            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
+            gridInv.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            gridInv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = Color.White;
+            dataGridViewCellStyle2.Font = new Font("Arial", 12F);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.GradientInactiveCaption;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            gridInv.DefaultCellStyle = dataGridViewCellStyle2;
+            gridInv.Dock = DockStyle.Fill;
+            gridInv.EnableHeadersVisualStyles = false;
+            gridInv.GridColor = Color.Black;
+            gridInv.Location = new Point(15, 10);
+            gridInv.MultiSelect = false;
+            gridInv.Name = "gridInv";
+            gridInv.ReadOnly = true;
+            gridInv.RowHeadersVisible = false;
+            gridInv.ScrollBars = ScrollBars.Vertical;
+            gridInv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            gridInv.Size = new Size(632, 264);
+            gridInv.TabIndex = 0;
+            gridInv.CellDoubleClick += gridInv_CellDoubleClick;
+            gridInv.CellFormatting += GridInv_CellFormatting;
+            gridInv.DataBindingComplete += GridInv_DataBindingComplete;
+            gridInv.SelectionChanged += GridInv_SelectionChanged;
+            // 
             // timerData
             // 
             timerData.Enabled = true;
@@ -521,11 +521,11 @@
             tspCont.ResumeLayout(false);
             tspCont.PerformLayout();
             pnlProduct.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)gridInv).EndInit();
             editProduct.ResumeLayout(false);
             editProduct.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numValue).EndInit();
             ((System.ComponentModel.ISupportInitialize)imgProd).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gridInv).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }

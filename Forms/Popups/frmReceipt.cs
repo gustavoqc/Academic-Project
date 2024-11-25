@@ -21,22 +21,29 @@ namespace Project.Forms.Popups
         private readonly decimal totalValue;
         private readonly int totalItems;
         private readonly string paymentMethod;
+        private readonly string? employee;
+        private readonly List<string>? customer;
+        private readonly bool valid;
 
-        public frmReceipt(List<Product> receiptContent, decimal totalValue, int totalItems, string paymentMethod)
+        public frmReceipt(List<Product> receiptContent, decimal totalValue, int totalItems, string paymentMethod, string? employee, List<string>? customer, bool valid)
         {
             this.paymentMethod = paymentMethod;
             this.receiptContent = receiptContent;
             this.totalValue = totalValue;
             this.totalItems = totalItems;
+			this.employee = employee;
+			this.customer = customer;
+            this.valid = valid;
+
             InitializeComponent();
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void btnPrint_Click(object sender, EventArgs e)
+        private void BtnPrint_Click(object sender, EventArgs e)
         {
             if (dialPrint.ShowDialog() == DialogResult.OK)
             {
@@ -47,7 +54,7 @@ namespace Project.Forms.Popups
             Close();
         }
 
-        private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
+        private void DocReceipt_PrintPage(object sender, PrintPageEventArgs e)
         {
             string receiptContent = " Item".PadRight(11) + "Código".PadRight(11) + "Descrição".PadRight(28) +
                                     "Qtde.".PadRight(10) + "Vl. Unit.".PadRight(11) + "Vl. Total\n";
@@ -68,12 +75,6 @@ namespace Project.Forms.Popups
                             continue;
                         }
 
-                        if (subItem.Text.Length <= 6)
-                        {
-                            receiptContent += subItem.Text.PadRight(subItem.Text.Length + 24);
-                            continue;
-                        }
-
                         receiptContent += subItem.Text.PadRight(29);
                         continue;
                     }
@@ -85,13 +86,31 @@ namespace Project.Forms.Popups
             receiptContent += new string('-', 81) + "\n";
             receiptContent += "Quantidade Total de Itens: ".PadRight(26) + totalItems + "\n";
             receiptContent += "Valor Total: R$".PadRight(16) + totalValue + "\n";
-            receiptContent += "Valor Pago:  R$".PadRight(16) + totalValue + "\n";
-            receiptContent += "Método de pagamento: ".PadRight(21) + paymentMethod;
+
+            if(valid)
+                receiptContent += "Valor Pago:  R$".PadRight(16) + totalValue + "\n";
+            else
+                receiptContent += "Valor Pago:  R$".PadRight(16) + "0,00\n";
+
+            receiptContent += "Método de pagamento: ".PadRight(21) + paymentMethod + "\n";
+            receiptContent += new string('-', 81) + "\n";
+            
+            if (employee != null)
+			    receiptContent += "Vendedor: ".PadRight(12) + employee + "\n";
+            
+            if (customer != null)
+            {
+                receiptContent += "Consumidor: ".PadRight(12) + customer[0] + "\n";
+                receiptContent += "CPF: ".PadRight(12) + customer[1] + "\n";
+            } 
+            else {
+                receiptContent += "CONSUMIDOR NÃO IDENTIFICADO\n";
+            }
 
             e.Graphics?.DrawString(receiptContent, new Font("Courier New", 12), Brushes.Black, 10, 10);
         }
 
-        private void frmReceipt_Load(object sender, EventArgs e)
+        private void FrmReceipt_Load(object sender, EventArgs e)
         {
             int itemCount = 1;
 
@@ -108,7 +127,7 @@ namespace Project.Forms.Popups
             }
         }
 
-        private void listReceipt_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        private void ListReceipt_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.Item != null)
                 e.Item.Selected = false;

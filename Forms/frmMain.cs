@@ -14,12 +14,12 @@ using Project.Forms.UserControls;
 
 namespace Project.Forms
 {
-    public partial class frmMain : Form
+    public partial class FrmMain : Form
     {
         private readonly string employeePosition;
         private readonly string employeeID;
 
-        public frmMain(string employeePosition, string employeeID)
+        public FrmMain(string employeePosition, string employeeID)
         {
             this.employeePosition = employeePosition;
             this.employeeID = employeeID;
@@ -51,7 +51,7 @@ namespace Project.Forms
             return null;
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
+        private void FrmMain_Load(object sender, EventArgs e)
         {
             lblID.Text = employeeID.ToString();
 
@@ -94,7 +94,7 @@ namespace Project.Forms
             if (MessageBox.Show("Deseja realmente sair?", "Desconectando", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 this.Hide();
-                frmLogin frmLogin = new();
+                FrmLogin frmLogin = new();
                 frmLogin.ShowDialog();
                 this.Close();
             }

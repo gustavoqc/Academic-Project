@@ -37,17 +37,6 @@ namespace Project.Controls
             cmbCateg.ValueMember = "id_categ";
         }
 
-        private static void ClearTextBoxes(Panel panel)
-        {
-            foreach (Control control in panel.Controls)
-            {
-                if (control is TextBox textBox)
-                {
-                    textBox.Clear();
-                }
-            }
-        }
-
         private void HideActionButtons()
         {
             btnUpdateInv.Visible = false;
@@ -151,6 +140,8 @@ namespace Project.Controls
                     [
                         new() { Name = "T.id_transacao", Alias = "ID"},
                         new() { Name = "T.transacao_valida"},
+                        new() { Name = "C.id_cliente"},
+                        new() { Name = "E.id_func"},
                         new() { Name = "C.nome_cliente", Alias = "Cliente" },
                         new() { Name = "T.dt_transacao", Alias = "Data" },
                         new() { Name = "T.valor_total", Alias = "Valor" },
@@ -160,8 +151,13 @@ namespace Project.Controls
 
                     InnerJoin =
                     [
-                        "cliente C ON T.id_cliente_selecionado = C.id_cliente",
                         "pagamento P ON T.tipo_pagamento_selecionado = P.tipo_pagamento"
+                    ],
+
+                    LeftJoin =
+                    [
+                        "cliente C ON T.id_cliente_selecionado = C.id_cliente",
+                        "funcionario E ON T.id_func_selecionado = E.id_func"
                     ],
 
                     Where = $"status_transacao {transStatus} 0",
@@ -175,7 +171,7 @@ namespace Project.Controls
         private async void LoadData(string data)
         {
             txtSearch.Text = "";
-            txtSearch_Leave("", EventArgs.Empty);
+            TxtSearch_Leave("", EventArgs.Empty);
             pgbData.Visible = true;
             gridInv.Columns.Clear();
             gridInv.DataSource = "";
@@ -268,19 +264,19 @@ namespace Project.Controls
             LoadData(gridInv.Tag?.ToString() ?? "I");
         }
 
-        private void btnActiveTrans_Click(object sender, EventArgs e)
+        private void BtnActiveTrans_Click(object sender, EventArgs e)
         {
             LoadData("TA");
             gridInv.Tag = "TA";
         }
 
-        private void btnHistoryTrans_Click(object sender, EventArgs e)
+        private void BtnHistoryTrans_Click(object sender, EventArgs e)
         {
             LoadData("TH");
             gridInv.Tag = "TH";
         }
 
-        private void btnDeleteProd_Click(object sender, EventArgs e)
+        private void BtnDeleteProd_Click(object sender, EventArgs e)
         {
             var dialog = MessageBox.Show($"Deseja realmente excluir o produto \"{gridInv.SelectedCells[1].Value}\" permanentemente?", "Excluir Produto", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -299,7 +295,7 @@ namespace Project.Controls
             }
         }
 
-        private void gridInv_SelectionChanged(object sender, EventArgs e)
+        private void GridInv_SelectionChanged(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(gridInv.Tag?.ToString()) && !gridInv.Tag.Equals("TH") && !gridInv.Tag.Equals("E"))
             {
@@ -307,7 +303,7 @@ namespace Project.Controls
             }
         }
 
-        private void btnUpdateInv_Click(object sender, EventArgs e)
+        private void BtnUpdateInv_Click(object sender, EventArgs e)
         {
             int lastIndex = gridInv.SelectedCells.Count - 1;
             int currentAmount = Convert.ToInt32(gridInv.SelectedCells[lastIndex].Value);
@@ -334,7 +330,7 @@ namespace Project.Controls
             LoadData("I");
         }
 
-        private void btnUpdateProduct_Click(object sender, EventArgs e)
+        private void BtnUpdateProduct_Click(object sender, EventArgs e)
         {
             LoadCategories();
             HideActionButtons();
@@ -359,22 +355,21 @@ namespace Project.Controls
             txtProdId.Text = txtProdId.Text.PadLeft(5, '0');
             cmbCateg.SelectedIndex = cmbCateg.FindStringExact(gridInv.SelectedCells[2].Value.ToString());
             numValue.Value = Convert.ToDecimal(gridInv.SelectedCells[3].Value);
-            imgPath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
+            imgPath = Path.Combine(folderPath, $"{gridInv.SelectedCells[1].Value}.webp");
 
             if (File.Exists(imgPath))
                 imgProd.Image = Image.FromFile(imgPath);
             else
                 imgProd.Image = imgProd.InitialImage;
 
-
             editProduct.BringToFront();
             editProduct.Visible = true;
         }
 
-        private void btnApprove_Click(object sender, EventArgs e)
+        private void BtnApprove_Click(object sender, EventArgs e)
         {
             DatabaseQuery db = new();
-            string desc = gridInv.SelectedCells[5].Value.ToString() ?? "Error";
+            string desc = gridInv.SelectedCells[7].Value.ToString() ?? "Error";
             var items = desc.Split(["|-|"], StringSplitOptions.TrimEntries);
             List<(string, int)> products = [];
             string message = "";
@@ -419,7 +414,7 @@ namespace Project.Controls
             LoadData("TH");
         }
 
-        private void btnDeny_Click(object sender, EventArgs e)
+        private void BtnDeny_Click(object sender, EventArgs e)
         {
             DatabaseQuery db = new();
 
@@ -441,7 +436,7 @@ namespace Project.Controls
             LoadData("TH");
         }
 
-        private void btnEditProduct_Click(object sender, EventArgs e)
+        private void BtnEditProduct_Click(object sender, EventArgs e)
         {
             var validFields = FieldValidation.ValidateControls(editProduct);
             var errorMessage = FieldValidation.SetMessage(validFields);
@@ -454,7 +449,7 @@ namespace Project.Controls
 
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
             string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
-            string savePath = Path.Combine(folderPath, $"Product_{txtProdId.Text}.png");
+            string savePath = Path.Combine(folderPath, $"{gridInv.SelectedCells[1].Value}.webp");
             DatabaseQuery db = new();
 
             var queryParams = new UpdateQueryParams
@@ -477,17 +472,16 @@ namespace Project.Controls
                 if (imgTag != null)
                     File.Copy(imgTag, savePath, true);
 
-                imgProd.Image.Dispose();
                 imgProd.Image = null;
                 imgProd.Tag = null;
             }
 
-            editProduct.Visible = false;
             editProduct.SendToBack();
+            editProduct.Visible = false;
             LoadData("I");
         }
 
-        private void imgProd_Click(object sender, EventArgs e)
+        private void ImgProd_Click(object sender, EventArgs e)
         {
             if (imgProd.Image != null)
             {
@@ -503,7 +497,7 @@ namespace Project.Controls
             }
         }
 
-        private void numValue_KeyPress(object sender, KeyPressEventArgs e)
+        private void NumValue_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '.')
                 e.KeyChar = ',';
@@ -517,7 +511,7 @@ namespace Project.Controls
             }
         }
 
-        private void editProduct_VisibleChanged(object sender, EventArgs e)
+        private void EditProduct_VisibleChanged(object sender, EventArgs e)
         {
             if (editProduct.Visible)
             {
@@ -529,7 +523,7 @@ namespace Project.Controls
             gridInv.ClearSelection();
         }
 
-        private void txtSearch_Enter(object sender, EventArgs e)
+        private void TxtSearch_Enter(object sender, EventArgs e)
         {
             if (txtSearch.Text.Equals("Buscar registro..."))
             {
@@ -538,7 +532,7 @@ namespace Project.Controls
             }
         }
 
-        private void txtSearch_Leave(object sender, EventArgs e)
+        private void TxtSearch_Leave(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtSearch.Text))
             {
@@ -547,7 +541,7 @@ namespace Project.Controls
             }
         }
 
-        private void txtSearch_TextChanged(object sender, EventArgs e)
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
             if (gridInv.DataSource is DataView view)
             {
@@ -578,30 +572,32 @@ namespace Project.Controls
         private string FilterSearch(string searchText)
         {
             searchText = searchText.Replace("'", "\\'");
-            switch (txtSearch.Tag)
+            return txtSearch.Tag switch
             {
-                case "E":
-                    return $"Nome LIKE '%{searchText}%' OR Convert(Admissão, 'System.String') LIKE '%{searchText}%' OR Cargo LIKE '{searchText}%'";
-                case "I":
-                    return $"Produto LIKE '%{searchText}%' OR Categoria LIKE '{searchText}%'";
-                case "T":
-                    return $"Cliente LIKE '{searchText}%'";
-                default:
-                    return "";
-            }
+                "E" => $"Nome LIKE '%{searchText}%' OR Convert(Admissão, 'System.String') LIKE '%{searchText}%' OR Cargo LIKE '{searchText}%'",
+                "I" => $"Produto LIKE '%{searchText}%' OR Categoria LIKE '{searchText}%'",
+                "T" => $"Cliente LIKE '{searchText}%'",
+                _ => "",
+            };
         }
 
-        private void gridInv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        private void GridInv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             string tag = gridInv.Tag!.ToString()![..1];
 
             gridInv.Columns[1].Visible = true;
+            gridInv.Columns[2].Visible = true;
+            gridInv.Columns[3].Visible = true;
 
             if (!tag.Equals("E"))
                 gridInv.Columns[0].Visible = false;
 
             if (tag.Equals("T"))
+            {
                 gridInv.Columns[1].Visible = false;
+                gridInv.Columns[2].Visible = false;
+                gridInv.Columns[3].Visible = false;
+            }
         }
 
         private void btnTransactions_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -611,7 +607,7 @@ namespace Project.Controls
             HideActionButtons();
             txtSearch.Tag = "T";
             txtSearch.Text = "";
-            txtSearch_Leave(sender, e);
+            TxtSearch_Leave(sender, e);
         }
 
         private void btnEmployee_Click(object sender, EventArgs e)
@@ -627,23 +623,34 @@ namespace Project.Controls
             editProduct.Visible = false;
             HideActionButtons();
             txtSearch.Text = "";
-            txtSearch_Leave(sender, e);
+            TxtSearch_Leave(sender, e);
         }
 
         private void gridInv_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (gridInv.Tag!.Equals("TH"))
             {
+                bool isValid = Convert.ToBoolean(gridInv.Rows[e.RowIndex].Cells[1].Value);
+
+                var employee = gridInv.Rows[e.RowIndex].Cells[3].Value;
+                int? employeeID = employee is DBNull ? null : Convert.ToInt32(employee);
+                var customer = gridInv.Rows[e.RowIndex].Cells[2].Value;
+                int? customerID = customer is DBNull ? null : Convert.ToInt32(customer);
+
+                string? employeeData = GetEmployee(employeeID);
+                List<string>? customerData = GetCustomer(customerID);
+
                 string descText = gridInv.Rows[e.RowIndex].Cells["Descrição"].Value.ToString()!;
                 decimal totalValue = Convert.ToDecimal(gridInv.Rows[e.RowIndex].Cells["Valor"].Value);
                 string paymentMethod = gridInv.Rows[e.RowIndex].Cells["Pagamento"].Value.ToString()!;
+
                 var items = descText.Split(["|-|"], StringSplitOptions.TrimEntries);
                 List<Product> receiptContent = [];
 
                 foreach (var item in items)
                 {
                     var data = item.Split(["-"], StringSplitOptions.RemoveEmptyEntries);
-                    
+
                     Product product = new()
                     {
                         ID = GetText(data[0]),
@@ -655,26 +662,26 @@ namespace Project.Controls
                     receiptContent.Add(product);
                 }
 
-                frmReceipt frmReceipt = new(receiptContent, totalValue, items.Length, paymentMethod);
+                frmReceipt frmReceipt = new(receiptContent, totalValue, items.Length, paymentMethod, employeeData, customerData, isValid);
                 frmReceipt.ShowDialog();
             }
         }
 
         decimal GetProductValue(string productID)
         {
-            decimal value = 0;
+            decimal value;
 
             DatabaseQuery db = new();
-            
+
             var queryParams = new SelectQueryParams
             {
                 TableName = "produto",
-                Columns = [ new() {Name = "valor_prod"} ],
+                Columns = [new() { Name = "valor_prod" }],
                 Where = $"id_prod = {productID}"
             };
 
             var result = db.SelectQuery(queryParams);
-            
+
             if (result != null && result.Rows.Count > 0)
                 value = Convert.ToDecimal(result.Rows[0][0]);
             else
@@ -706,7 +713,7 @@ namespace Project.Controls
             db.UpdateQuery(queryParams);
         }
 
-        List<string> HasInventory(int itemId, int itemQty)
+        static List<string> HasInventory(int itemId, int itemQty)
         {
             DatabaseQuery db = new();
 
@@ -734,9 +741,65 @@ namespace Project.Controls
                 {
                     return ["true", $"{id}", $"{product}", $"{inventory}"];
                 }
-            } 
+            }
 
             return ["false", $"{id}", $"{product}", $"{inventory}"];
+        }
+
+        static string? GetEmployee(int? id)
+        {
+            if (id != null)
+            {
+                DatabaseQuery db = new();
+
+                var queryParams = new SelectQueryParams
+                {
+                    TableName = "funcionario",
+                    Columns = [new() { Name = "nome_func" }],
+                    Where = $"id_func = {id}",
+                    OrderBy = "dt_admissao DESC"
+                };
+
+                var result = db.SelectQuery(queryParams);
+
+                if (result != null && result.Rows.Count > 0)
+                    return result.Rows[0][0].ToString()!;
+            }
+
+            return null;
+        }
+
+        static List<string>? GetCustomer(int? id)
+        {
+            if (id != null)
+            {
+                DatabaseQuery db = new();
+
+                var queryParams = new SelectQueryParams
+                {
+                    TableName = "cliente",
+                    Columns =
+                    [
+                        new() { Name = "nome_cliente" },
+                        new() { Name = "cpf_cliente" }
+                    ],
+                    Where = $"id_cliente = {id}"
+                };
+
+                var result = db.SelectQuery(queryParams);
+
+                if (result != null && result.Rows.Count > 0)
+                    return [result.Rows[0][0].ToString(), result.Rows[0][1].ToString()];
+            }
+
+            return null;
+        }
+
+        private void numValue_Enter(object sender, EventArgs e)
+        {
+            BeginInvoke((MethodInvoker)delegate {
+                numValue.Select(0, numValue.Value.ToString().Length);
+            });
         }
     }
 }

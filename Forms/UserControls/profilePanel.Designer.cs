@@ -179,6 +179,7 @@
             txtPsw.TabIndex = 2;
             txtPsw.UseSystemPasswordChar = true;
             txtPsw.TextChanged += txtPsw_TextChanged;
+            txtPsw.Enter += txtPsw_Enter;
             txtPsw.Leave += txtPsw_Leave;
             // 
             // label6
