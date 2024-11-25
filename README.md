@@ -1,7 +1,7 @@
 # Desktop-Project
 Tecnologias usadas: C# (Windows Forms)
 
-***Importante: Para ser possivel a execução, crie o banco de dados MySQL executando as instruções presentes no arquivo `Mysql query.sql` da pasta inicial do projeto.***
+***Importante: Para ser possivel a execução, crie o banco de dados MySQL executando as instruções presentes no arquivo "Mysql query.sql" da raíz do projeto.***
 
 # Instruções para execução
 
