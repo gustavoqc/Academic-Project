@@ -1,8 +1,9 @@
+***Importante: Para compatibilidade, este projeto precisa estar na mesma raiz do projeto https://github.com/gustavoqc/Greenpath-Web***
+***Para ser possivel a execução, crie o banco de dados MySQL executando as instruções presentes no arquivo "Mysql query.sql" da raíz do projeto.***
+
 # Desktop-Project
 Tecnologias usadas: C# (Windows Forms) <br>
 Versão do .NET: 8.0
-
-***Importante: Para ser possivel a execução, crie o banco de dados MySQL executando as instruções presentes no arquivo "Mysql query.sql" da raíz do projeto.***
 
 # Instruções para execução
 
