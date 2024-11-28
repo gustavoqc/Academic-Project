@@ -1,4 +1,4 @@
-***Importante: Para compatibilidade, este projeto precisa estar na mesma raiz do projeto https://github.com/gustavoqc/Greenpath-Web***
+***Importante: Para compatibilidade, este projeto precisa estar na mesma raiz do projeto https://github.com/gustavoqc/Greenpath-Web*** <br>
 ***Para ser possivel a execução, crie o banco de dados MySQL executando as instruções presentes no arquivo "Mysql query.sql" da raíz do projeto.***
 
 # Desktop-Project
