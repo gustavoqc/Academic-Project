@@ -285,8 +285,8 @@ namespace Project.Forms
 
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
             string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
-            string savePath = Path.Combine(folderPath, $"{txtProductName.Text.Replace(" ", "-")}.webp");
-            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "\\'"), $"\\\\imagens\\\\{txtProductName.Text.Replace("'", "\\'").Replace(" ", "-")}.webp", txtLinkUrl.Text.Replace("'", "\\'"));
+            string savePath = Path.Combine(folderPath, $"{txtProductName.Text.Replace(" ", "-")}.png");
+            int rows = InsertProducts(txtProductName.Text.Replace("'", "\\'"), (int)cmbCateg.SelectedValue!, numValue.Value.ToString(), numQty.Value.ToString(), txtDesc.Text.Replace("'", "\\'"), $"\\\\Images\\\\{txtProductName.Text.Replace("'", "\\'").Replace(" ", "-")}.png", txtLinkUrl.Text.Replace("'", "\\'"));
 
             if (rows == 1)
             {
@@ -302,6 +302,25 @@ namespace Project.Forms
 
                 btnProducts_Click(sender, e);
             }
+
+            CopyImageToWebPageFolder(savePath);
+        }
+
+        public static void CopyImageToWebPageFolder(string savePath)
+        {
+            var solutionDirectory = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
+
+            var reactAppPath = Path.Combine(solutionDirectory, "Web-Project", "web", "public", "Images");
+
+            reactAppPath = Path.GetFullPath(reactAppPath);
+
+            if (!Directory.Exists(reactAppPath))
+                Directory.CreateDirectory(reactAppPath);
+
+            var fileName = Path.GetFileName(savePath);
+            var destinationPath = Path.Combine(reactAppPath, fileName);
+
+            File.Copy(savePath, destinationPath, overwrite: true);
         }
 
         private void txtId_KeyPress(object sender, KeyPressEventArgs e)

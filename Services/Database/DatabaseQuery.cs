@@ -13,7 +13,7 @@ namespace Project.Services.Database
 {
     internal class DatabaseQuery
     {
-        private const string connectionString = "Host=localhost;Username=ProjUni9;Password=ProjUni9;Database=uninove-02-2024";
+        private const string connectionString = "Host=localhost;Username=root;Password=password;Database=uninove-02-2024";
 
         public DataTable? SelectQuery(SelectQueryParams queryParams)
         {

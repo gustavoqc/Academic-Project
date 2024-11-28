@@ -355,7 +355,7 @@ namespace Project.Controls
             txtProdId.Text = txtProdId.Text.PadLeft(5, '0');
             cmbCateg.SelectedIndex = cmbCateg.FindStringExact(gridInv.SelectedCells[2].Value.ToString());
             numValue.Value = Convert.ToDecimal(gridInv.SelectedCells[3].Value);
-            imgPath = Path.Combine(folderPath, $"{gridInv.SelectedCells[1].Value}.webp");
+            imgPath = Path.Combine(folderPath, $"{gridInv.SelectedCells[1].Value}.png");
 
             if (File.Exists(imgPath))
                 imgProd.Image = Image.FromFile(imgPath);
@@ -449,7 +449,7 @@ namespace Project.Controls
 
             string? documentsPath = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.ToString();
             string folderPath = Path.Combine(documentsPath ?? "C://", "Images");
-            string savePath = Path.Combine(folderPath, $"{gridInv.SelectedCells[1].Value}.webp");
+            string savePath = Path.Combine(folderPath, $"{gridInv.SelectedCells[1].Value}.png");
             DatabaseQuery db = new();
 
             var queryParams = new UpdateQueryParams
@@ -470,7 +470,10 @@ namespace Project.Controls
                 string? imgTag = imgProd.Tag?.ToString();
 
                 if (imgTag != null)
+                {
                     File.Copy(imgTag, savePath, true);
+                    RegisterPanel.CopyImageToWebPageFolder(savePath);
+                }
 
                 imgProd.Image = null;
                 imgProd.Tag = null;
